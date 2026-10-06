@@ -10,69 +10,173 @@
             📦 Nueva Compra
         </h2>
 
+
         <form method="POST">
+
             {% csrf_token %}
 
-            <div class="mb-3">
-                <label>Proveedor</label>
+
+            <!-- PROVEEDOR -->
+
+            <div class="mb-4">
+
+                <label class="fw-bold">
+                    Proveedor
+                </label>
+
                 <select
-                name="proveedor"
-                class="form-control"
-                required>
+                    name="proveedor"
+                    class="form-control"
+                    required
+                >
 
                     <option value="">
                         Seleccionar proveedor
                     </option>
 
                     {% for pr in proveedores %}
+
                     <option value="{{ pr.id }}">
                         {{ pr.nombre }}
                     </option>
+
                     {% endfor %}
+
                 </select>
+
             </div>
 
-            <div class="mb-3">
-                <label>Producto</label>
 
-                <select
-                name="producto"
-                class="form-control"
-                required>
+            <!-- PRODUCTO -->
+
+            <div class="mb-4">
+
+                <label class="fw-bold">
+                    Producto
+                </label>
+
+                <select 
+                    name="producto"
+                    id="producto"
+                    class="form-control" 
+                    required
+                >
 
                     <option value="">
                         Seleccionar producto
                     </option>
 
                     {% for p in productos %}
+
                     <option value="{{ p.id }}">
-                        {{ p.nombre }}
+                        {{ p.codigo }} - {{ p.nombre }}
                     </option>
+
                     {% endfor %}
+
                 </select>
+
             </div>
 
-            <div class="mb-3">
-                <label>Cantidad</label>
+
+            <!-- VARIANTE -->
+
+            <div class="mb-4">
+
+                <label class="fw-bold">
+                    Variante
+                </label>
+
+                <select
+                    name="variante"
+                    id="variante"
+                    class="form-control"
+                    required
+                >
+
+                    <option value="">
+                        Primero seleccionar producto
+                    </option>
+
+                    {% for p in productos %}
+
+                        {% for v in p.variantes.all %}
+
+                        <option
+                            value="{{ v.id }}"
+                            data-producto="{{ p.id }}"
+                            style="display:none;"
+                        >
+
+                            {{ v.nombre }}
+
+                            {% if v.color %}
+                            - {{ v.color }}
+                            {% endif %}
+
+                            {% if v.talle %}
+                            - Talle {{ v.talle }}
+                            {% endif %}
+
+                            {% if v.medida %}
+                            - {{ v.medida }}
+                            {% endif %}
+
+                            | Stock actual: {{ v.stock }}
+
+                        </option>
+
+                        {% endfor %}
+
+                    {% endfor %}
+
+                </select>
+
+            </div>
+
+
+            <!-- CANTIDAD -->
+
+            <div class="mb-4">
+
+                <label class="fw-bold">
+                    Cantidad
+                </label>
+
                 <input
-                type="number"
-                name="cantidad"
-                class="form-control"
-                required>
+                    type="number"
+                    name="cantidad"
+                    class="form-control"
+                    min="1"
+                    required
+                >
+
             </div>
 
-            <div class="mb-3">
-                <label>Precio de compra</label>
+
+            <!-- PRECIO -->
+
+            <div class="mb-4">
+
+                <label class="fw-bold">
+                    Precio de compra
+                </label>
 
                 <input
-                type="number"
-                name="precio"
-                class="form-control"
-                required>
+                    type="number"
+                    name="precio"
+                    class="form-control"
+                    min="0"
+                    required
+                >
+
             </div>
 
-            <button class="btn btn-success w-100">
-                Guardar Compra
+
+            <button
+                class="btn btn-success btn-lg w-100"
+            >
+                💾 Guardar Compra
             </button>
 
         </form>
@@ -80,5 +184,63 @@
     </div>
 
 </div>
+
+
+<script>
+
+const productoSelect =
+    document.getElementById("producto");
+
+const varianteSelect =
+    document.getElementById("variante");
+
+
+productoSelect.addEventListener(
+    "change",
+    function () {
+
+        const productoId =
+            this.value;
+
+
+        varianteSelect
+        .querySelectorAll("option")
+        .forEach(function (option) {
+
+            if (!option.value) {
+
+                option.style.display =
+                    "";
+
+                return;
+
+            }
+
+
+            if (
+                option.dataset.producto
+                === productoId
+            ) {
+
+                option.style.display =
+                    "";
+
+            } else {
+
+                option.style.display =
+                    "none";
+
+            }
+
+        });
+
+
+        varianteSelect.value = "";
+
+    }
+);
+
+</script>
+
 
 {% endblock %}

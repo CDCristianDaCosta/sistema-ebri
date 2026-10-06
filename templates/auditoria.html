@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% load humanize %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="fas fa-shield-halved"></i>
+                Auditoría
+            </h2>
+
+            <p class="text-muted mb-0">
+                Registro de actividades de {{ negocio.nombre }}
+            </p>
+        </div>
+
+        <div>
+            <span class="badge bg-dark px-3 py-2">
+                {{ registros|length }} registros
+            </span>
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-body p-0">
+
+            {% if registros %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead>
+
+                        <tr>
+
+                            <th class="px-3">
+                                Fecha
+                            </th>
+
+                            <th>
+                                Usuario
+                            </th>
+
+                            <th>
+                                Acción
+                            </th>
+
+                            <th>
+                                Modelo
+                            </th>
+
+                            <th>
+                                Detalle
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for registro in registros %}
+
+                        <tr>
+
+                            <td class="px-3 text-nowrap">
+
+                                {{ registro.fecha|date:"d/m/Y H:i" }}
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+
+                                    {% if registro.usuario %}
+
+                                        {{ registro.usuario.username }}
+
+                                    {% else %}
+
+                                        Usuario eliminado
+
+                                    {% endif %}
+
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                {% if "CREAR" in registro.accion %}
+
+                                    <span class="badge bg-success">
+                                        {{ registro.accion }}
+                                    </span>
+
+                                {% elif "EDITAR" in registro.accion %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        {{ registro.accion }}
+                                    </span>
+
+                                {% elif "ELIMINAR" in registro.accion %}
+
+                                    <span class="badge bg-danger">
+                                        {{ registro.accion }}
+                                    </span>
+
+                                {% elif "ABRIR" in registro.accion %}
+
+                                    <span class="badge bg-primary">
+                                        {{ registro.accion }}
+                                    </span>
+
+                                {% elif "CERRAR" in registro.accion %}
+
+                                    <span class="badge bg-secondary">
+                                        {{ registro.accion }}
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-dark">
+                                        {{ registro.accion }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                {% if registro.modelo %}
+
+                                    {{ registro.modelo }}
+
+                                    {% if registro.objeto_id %}
+                                        #{{ registro.objeto_id }}
+                                    {% endif %}
+
+                                {% else %}
+
+                                    -
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td style="min-width: 350px;">
+
+                                {{ registro.descripcion }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="text-center py-5">
+
+                <i
+                    class="fas fa-clipboard-check fa-3x text-muted mb-3"
+                ></i>
+
+                <h5>
+                    No hay registros de auditoría
+                </h5>
+
+                <p class="text-muted mb-0">
+                    Las próximas operaciones realizadas
+                    aparecerán aquí.
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

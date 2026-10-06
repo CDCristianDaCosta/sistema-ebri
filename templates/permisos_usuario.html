@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">
+                🔐 Permisos de usuario
+            </h2>
+
+            <p class="text-muted mb-0">
+                Configurando permisos para
+                <strong>{{ usuario.username }}</strong>
+                en {{ negocio.nombre }}
+            </p>
+        </div>
+
+        <a href="/usuarios/" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Volver
+        </a>
+    </div>
+
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0">
+                Permisos disponibles
+            </h5>
+        </div>
+
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                {% csrf_token %}
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+                            <tr>
+                                <th style="width: 70%;">
+                                    Función
+                                </th>
+
+                                <th class="text-center">
+                                    Permitido
+                                </th>
+                            </tr>
+                        </thead>
+
+
+                        <tbody>
+
+                            <tr>
+                                <td>
+                                    <strong>Realizar ventas</strong>
+                                    <div class="text-muted small">
+                                        Permite registrar nuevas ventas.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="realizar_ventas"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.realizar_ventas %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Ver productos</strong>
+                                    <div class="text-muted small">
+                                        Permite consultar los productos y stock.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="ver_productos"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.ver_productos %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Agregar producto</strong>
+                                    <div class="text-muted small">
+                                        Permite crear nuevos productos.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="agregar_producto"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.agregar_producto %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Editar producto</strong>
+                                    <div class="text-muted small">
+                                        Permite modificar productos existentes.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="editar_producto"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.editar_producto %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Eliminar producto</strong>
+                                    <div class="text-muted small">
+                                        Permite eliminar productos.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="eliminar_producto"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.eliminar_producto %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Clientes</strong>
+                                    <div class="text-muted small">
+                                        Permite consultar y administrar clientes.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="clientes"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.clientes %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Proveedores</strong>
+                                    <div class="text-muted small">
+                                        Permite administrar proveedores.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="proveedores"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.proveedores %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Compras</strong>
+                                    <div class="text-muted small">
+                                        Permite registrar y administrar compras.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="compras"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.compras %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Reporte de ventas</strong>
+                                    <div class="text-muted small">
+                                        Permite consultar reportes de ventas.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="reporte_ventas"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.reporte_ventas %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Gráficos</strong>
+                                    <div class="text-muted small">
+                                        Permite consultar estadísticas y gráficos.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="graficos"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.graficos %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Caja</strong>
+                                    <div class="text-muted small">
+                                        Permite abrir, cerrar y consultar cajas.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="caja"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.caja %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Usuarios</strong>
+                                    <div class="text-muted small">
+                                        Permite administrar los usuarios del negocio.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="usuarios"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.usuarios %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
+
+                            <tr>
+                                <td>
+                                    <strong>Administración técnica</strong>
+                                    <div class="text-muted small">
+                                        Acceso a la administración técnica de Django.
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+
+                                    {% if usuario == negocio.propietario %}
+
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-lock-open"></i>
+                                            Propietario
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-lock"></i>
+                                            Solo propietario
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <div class="d-flex justify-content-end mt-4">
+
+                    <a href="/usuarios/" class="btn btn-secondary me-2">
+                        Cancelar
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Guardar permisos
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

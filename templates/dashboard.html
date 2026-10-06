@@ -1,149 +1,599 @@
 {% extends "base.html" %}
+{% load static %}
 {% load humanize %}
+
 {% block content %}
 
-<h2 class="mb-4 fw-bold">
-    📊 Panel de Control
-</h2>
+<div class="container-fluid px-0">
 
-<div class="row g-4">
+    <!-- ENCABEZADO -->
 
-    <!-- VENTAS HOY -->
-    <div class="col-lg-3 col-md-6 col-12">
-        <div class="card border-0 shadow-lg rounded-4 p-4 bg-success text-white">
-            <h5>
-                <i class="fas fa-money-bill-wave"></i>
-                Ventas del día
-            </h5>
+    <div class="mb-4">
 
-            <h2 class="fw-bold">
-                <span class="numero-py">
-                    {{ ventas_hoy }}
-                </span>
-            </h2>
-        </div>
-    </div>
+        <h1 class="fw-bold mb-1">
+            Panel de Control
+        </h1>
 
-    <!-- VENTAS MES -->
-    <div class="col-lg-3 col-md-6 col-12">
-        <div class="card border-0 shadow-lg rounded-4 p-4 bg-info text-white">
-            <h5>
-                <i class="fas fa-calendar"></i>
-                Ventas del mes
-            </h5>
-
-            <h2 class="fw-bold">
-                <span class="numero-py">
-                    {{ ventas_mes }}
-                </span>
-            </h2>
-        </div>
-    </div>
-
-    <!-- GANANCIA -->
-    <div class="col-lg-3 col-md-6 col-12">
-        <div class="card border-0 shadow-lg rounded-4 p-4 bg-warning text-dark">
-            <h5>
-                <i class="fas fa-wallet"></i>
-                Ganancia
-            </h5>
-
-            <h2 class="fw-bold">
-                <span class="numero-py">
-                    {{ ganancia_mes }}
-                </span>
-            </h2>
-        </div>
-    </div>
-
-
-    <!-- PRODUCTOS -->
-    <div class="col-lg-3 col-md-6 col-12">
-        <div class="card border-0 shadow-lg rounded-4 p-4 bg-primary text-white">
-            <h5>
-                <i class="fas fa-box"></i>
-                Productos
-            </h5>
-
-            <h2 class="fw-bold">
-                {{ cantidad_productos }}
-            </h2>
-        </div>
-    </div>
-
-</div>
-
-<div class="card mt-5 border-0 shadow rounded-4 p-4">
-
-    <h4 class="mb-3">
-        ⚠ Productos con bajo stock
-    </h4>
-
-    <ul class="list-group">
-
-        {% for p in productos_bajo %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-
-            {{ p.nombre }}
-
-            <span class="badge bg-danger rounded-pill">
-                {{ p.stock }}
-            </span>
-
-        </li>
-        {% empty %}
-
-        <li class="list-group-item text-success">
-            ✅ Todo en stock
-        </li>
-
-        {% endfor %}
-
-    </ul>
-
-</div>
-<div class="card mt-4 shadow border-0 rounded-4 p-4">
-
-    <h4 class="mb-3">
-        🔥 Productos más vendidos
-    </h4>
-
-    {% for p in top_productos %}
-        <div class="d-flex justify-content-between border-bottom py-2">
-
-            <span>
-                {{ p.producto__nombre }}
-            </span>
-
-            <strong>
-                {{ p.total }} vendidos
-            </strong>
-
-        </div>
-
-    {% empty %}
-        <p class="text-muted">
-            No hay ventas todavía
+        <p class="text-muted mb-0">
+            Bienvenido/a,
+            <strong>{{ request.user.username }}</strong>.
+            Resumen de <strong>{{ negocio.nombre }}</strong>.
         </p>
-    {% endfor %}
+
+    </div>
+
+
+    <!-- TARJETAS PRINCIPALES -->
+
+    <div class="row g-4">
+
+
+        <!-- VENTAS HOY -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div
+                class="card border-0 h-100"
+                style="border-left:5px solid #081450 !important;"
+            >
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <p class="text-muted mb-2">
+                                Ventas de hoy
+                            </p>
+
+                            <h3 class="fw-bold mb-0 numero-py">
+                                {{ ventas_hoy }}
+                            </h3>
+
+                            <small class="text-muted">
+                                Guaraníes
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="rounded-4 d-flex
+                                   align-items-center
+                                   justify-content-center"
+                            style="
+                                width:52px;
+                                height:52px;
+                                background:#eef1ff;
+                                color:#081450;
+                                font-size:21px;
+                            "
+                        >
+
+                            <i class="fas fa-money-bill-wave"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- VENTAS MES -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div
+                class="card border-0 h-100"
+                style="border-left:5px solid #198754 !important;"
+            >
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <p class="text-muted mb-2">
+                                Ventas del mes
+                            </p>
+
+                            <h3 class="fw-bold mb-0 numero-py">
+                                {{ ventas_mes }}
+                            </h3>
+
+                            <small class="text-muted">
+                                Guaraníes
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="rounded-4 d-flex
+                                   align-items-center
+                                   justify-content-center"
+                            style="
+                                width:52px;
+                                height:52px;
+                                background:#e9f7ef;
+                                color:#198754;
+                                font-size:21px;
+                            "
+                        >
+
+                            <i class="fas fa-chart-line"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- GANANCIA -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div
+                class="card border-0 h-100"
+                style="border-left:5px solid #f0ad00 !important;"
+            >
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <p class="text-muted mb-2">
+                                Ganancia del mes
+                            </p>
+
+                            <h3 class="fw-bold mb-0 numero-py">
+                                {{ ganancia_mes }}
+                            </h3>
+
+                            <small class="text-muted">
+                                Guaraníes
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="rounded-4 d-flex
+                                   align-items-center
+                                   justify-content-center"
+                            style="
+                                width:52px;
+                                height:52px;
+                                background:#fff8df;
+                                color:#c58a00;
+                                font-size:21px;
+                            "
+                        >
+
+                            <i class="fas fa-coins"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PRODUCTOS -->
+
+        <div class="col-xl-3 col-md-6">
+
+            <div
+                class="card border-0 h-100"
+                style="border-left:5px solid #0d6efd !important;"
+            >
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <p class="text-muted mb-2">
+                                Productos
+                            </p>
+
+                            <h3 class="fw-bold mb-0">
+                                {{ cantidad_productos }}
+                            </h3>
+
+                            <small class="text-muted">
+                                Productos registrados
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="rounded-4 d-flex
+                                   align-items-center
+                                   justify-content-center"
+                            style="
+                                width:52px;
+                                height:52px;
+                                background:#eaf2ff;
+                                color:#0d6efd;
+                                font-size:21px;
+                            "
+                        >
+
+                            <i class="fas fa-box"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SEGUNDA FILA -->
+
+    <div class="row g-4 mt-1">
+
+
+        <!-- STOCK BAJO -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 h-100">
+
+                <div class="card-body p-4">
+
+                    <div
+                        class="d-flex
+                               justify-content-between
+                               align-items-center
+                               mb-4"
+                    >
+
+                        <div>
+
+                            <h5 class="fw-bold mb-1">
+
+                                <i
+                                    class="fas fa-triangle-exclamation
+                                           text-warning me-2"
+                                ></i>
+
+                                Stock bajo
+
+                            </h5>
+
+                            <small class="text-muted">
+
+                                Productos que necesitan reposición
+
+                            </small>
+
+                        </div>
+
+
+                        <a
+                            href="/productos/"
+                            class="btn btn-sm btn-outline-primary"
+                        >
+
+                            Ver productos
+
+                        </a>
+
+                    </div>
+
+
+                    {% for p in productos_bajo %}
+
+                    <div
+                        class="d-flex
+                               justify-content-between
+                               align-items-center
+                               border-bottom
+                               py-3"
+                    >
+
+                        <div>
+
+                            <strong>
+                                {{ p.nombre }}
+                            </strong>
+
+                            <div class="text-muted small">
+
+                                Código:
+                                {{ p.codigo }}
+
+                            </div>
+
+                        </div>
+
+
+                        <span
+                            class="badge
+                                   {% if p.stock_total == 0 %}
+                                   bg-danger
+                                   {% else %}
+                                   bg-warning text-dark
+                                   {% endif %}
+                                   rounded-pill px-3 py-2"
+                        >
+
+                            {{ p.stock_total }}
+                            unidades
+
+                        </span>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div
+                        class="text-center
+                               py-5
+                               text-success"
+                    >
+
+                        <i
+                            class="fas fa-circle-check
+                                   fs-1 mb-3"
+                        ></i>
+
+                        <p class="mb-0 fw-semibold">
+
+                            Todo el stock está en buen nivel.
+
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MÁS VENDIDOS -->
+
+        <div class="col-lg-6">
+
+            <div class="card border-0 h-100">
+
+                <div class="card-body p-4">
+
+                    <div
+                        class="d-flex
+                               justify-content-between
+                               align-items-center
+                               mb-4"
+                    >
+
+                        <div>
+
+                            <h5 class="fw-bold mb-1">
+
+                                <i
+                                    class="fas fa-fire
+                                           me-2"
+                                    style="color:#081450;"
+                                ></i>
+
+                                Productos más vendidos
+
+                            </h5>
+
+                            <small class="text-muted">
+
+                                Productos con mayor cantidad vendida
+
+                            </small>
+
+                        </div>
+
+
+                        <a
+                            href="/ventas/reporte/"
+                            class="btn btn-sm btn-outline-primary"
+                        >
+
+                            Ver reportes
+
+                        </a>
+
+                    </div>
+
+
+                    {% for p in top_productos %}
+
+                    <div
+                        class="d-flex
+                               align-items-center
+                               gap-3
+                               border-bottom
+                               py-3"
+                    >
+
+                        <div
+                            class="rounded-circle
+                                   d-flex
+                                   justify-content-center
+                                   align-items-center"
+                            style="
+                                width:38px;
+                                height:38px;
+                                background:#081450;
+                                color:white;
+                                font-weight:bold;
+                            "
+                        >
+
+                            {{ forloop.counter }}
+
+                        </div>
+
+
+                        <div class="flex-grow-1">
+
+                            <strong>
+                                {{ p.producto__nombre }}
+                            </strong>
+
+                        </div>
+
+
+                        <strong
+                            style="color:#081450;"
+                        >
+
+                            {{ p.total }}
+
+                            <small class="text-muted">
+                                vendidos
+                            </small>
+
+                        </strong>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div
+                        class="text-center
+                               py-5
+                               text-muted"
+                    >
+
+                        <i
+                            class="fas fa-chart-simple
+                                   fs-1 mb-3"
+                        ></i>
+
+                        <p class="mb-0">
+
+                            Todavía no hay ventas registradas.
+
+                        </p>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- INFORMACIÓN DEL NEGOCIO -->
+
+    <div class="card border-0 mt-4">
+
+        <div class="card-body p-4">
+
+            <div class="row align-items-center">
+
+                <div class="col-md-8">
+
+                    <h5 class="fw-bold mb-2">
+
+                        <i
+                            class="fas fa-store
+                                   me-2"
+                            style="color:#081450;"
+                        ></i>
+
+                        {{ negocio.nombre }}
+
+                    </h5>
+
+                    <p class="text-muted mb-0">
+
+                        Sistema de gestión comercial
+                        de E-BRI Tienda.
+
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="col-md-4
+                           text-md-end
+                           mt-3 mt-md-0"
+                >
+
+                    <img
+                        src="{% static 'img/logo-ebri.jpg' %}"
+                        alt="E-BRI Tienda"
+                        style="
+                            width:75px;
+                            height:75px;
+                            object-fit:contain;
+                            border-radius:12px;
+                        "
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
+
+<!-- FORMATO DE NÚMEROS -->
 
 <script>
 
-    document.querySelectorAll(".numero-py")
-    .forEach(numero => {
-    
+document
+    .querySelectorAll(".numero-py")
+    .forEach(function(numero) {
+
         let valor =
             numero.innerText
             .replace(/\D/g, "");
-    
+
         numero.innerText =
             parseInt(valor || 0)
             .toLocaleString("es-PY")
             .replace(/,/g, ".");
+
     });
-    
-    </script>
+
+</script>
+
 {% endblock %}

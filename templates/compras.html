@@ -3,31 +3,168 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="container-fluid mt-4">
 
-    <div class="d-flex justify-content-between align-items-center">
-        <h2>Compras</h2>
-        <a href="/productos/compras/nueva/" class="btn btn-success">+ Nueva Compra</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <h2 class="fw-bold">
+            📦 Compras
+        </h2>
+
+        {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.compras %}
+
+        <a
+            href="/productos/compras/nueva/"
+            class="btn btn-success"
+        >
+            ➕ Nueva Compra
+        </a>
+
+        {% endif %}
+
     </div>
 
-    <div class="card shadow mt-3">
-        <table class="table table-striped">
 
-            <tr>
-                <th>Fecha</th>
-                <th>Proveedor</th>
-                <th>Total</th>
-            </tr>
+    <div class="card shadow border-0 rounded-4">
 
-            {% for c in compras %}
-            <tr>
-                <td>{{ c.fecha }}</td>
-                <td>{{ c.proveedor.nombre }}</td>
-                <td>Gs. {{ c.total|intcomma }}</td>
-            </tr>
-            {% endfor %}
+        <div class="table-responsive">
 
-        </table>
+            <table class="table table-striped table-hover align-middle mb-0">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>Fecha</th>
+
+                        <th>Proveedor</th>
+
+                        <th>Producto</th>
+
+                        <th>Variante</th>
+
+                        <th>Cantidad</th>
+
+                        <th>Precio compra</th>
+
+                        <th>Total</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for c in compras %}
+
+                        {% for detalle in c.detallecompra_set.all %}
+
+                        <tr>
+
+                            <td>
+                                {{ c.fecha|date:"d/m/Y H:i" }}
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    {{ c.proveedor.nombre }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+                                {{ detalle.producto.nombre }}
+                            </td>
+
+
+                            <td>
+
+                                {% if detalle.variante %}
+
+                                    <span class="badge bg-secondary">
+
+                                        {{ detalle.variante.nombre }}
+
+                                        {% if detalle.variante.color %}
+                                            | {{ detalle.variante.color }}
+                                        {% endif %}
+
+                                        {% if detalle.variante.talle %}
+                                            | Talle {{ detalle.variante.talle }}
+                                        {% endif %}
+
+                                        {% if detalle.variante.medida %}
+                                            | {{ detalle.variante.medida }}
+                                        {% endif %}
+
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="text-muted">
+                                        Sin variante
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+
+                            <td>
+
+                                <strong>
+                                    {{ detalle.cantidad }}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                Gs.
+                                {{ detalle.precio|intcomma }}
+
+                            </td>
+
+
+                            <td class="fw-bold text-success">
+
+                                Gs.
+                                {{ c.total|intcomma }}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    {% empty %}
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="text-center text-muted py-4"
+                            >
+
+                                📦 No hay compras registradas.
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
     </div>
 
 </div>

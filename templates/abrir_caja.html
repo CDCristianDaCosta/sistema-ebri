@@ -1,19 +1,79 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block content %}
 
 <div class="container mt-4">
 
-    <h2>Apertura de Caja</h2>
+    <div class="row justify-content-center">
 
-    <form method="POST">
-        {% csrf_token %}
+        <div class="col-md-6">
 
-        <label>Monto inicial</label>
-        <input type="number" name="monto_inicial" class="form-control" required>
+            <div class="card shadow border-0 rounded-4">
 
-        <button class="btn btn-success mt-3">Abrir Caja</button>
-    </form>
+                <div class="card-body p-4">
+
+                    <h2 class="fw-bold mb-4">
+                        💰 Abrir Caja
+                    </h2>
+
+                    <div class="alert alert-info">
+                        <strong>Usuario:</strong>
+                        {{ request.user.username }}
+                        <br>
+                        <strong>Fecha:</strong>
+                        {% now "d/m/Y H:i" %}
+                    </div>
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-bold">
+                                Monto inicial
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    Gs.
+                                </span>
+
+                                <input
+                                    type="number"
+                                    name="monto_inicial"
+                                    class="form-control form-control-lg"
+                                    min="0"
+                                    step="1"
+                                    required
+                                >
+
+                            </div>
+
+                            <small class="text-muted">
+                                Dinero disponible en efectivo al comenzar la caja.
+                            </small>
+
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-success btn-lg w-100"
+                        >
+                            🔓 Abrir Caja
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

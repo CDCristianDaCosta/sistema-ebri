@@ -5,35 +5,85 @@
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center">
+
         <h2>Clientes</h2>
-        <a href="/productos/clientes/agregar/" class="btn btn-success">+ Nuevo</a>
+
+        {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.clientes %}
+        <a
+            href="/productos/clientes/agregar/"
+            class="btn btn-success"
+        >
+            + Nuevo
+        </a>
+        {% endif %}
+
     </div>
 
     <form method="GET" class="my-3">
-        <input type="text" name="q" placeholder="Buscar..." class="form-control">
+
+        <input
+            type="text"
+            name="q"
+            placeholder="Buscar..."
+            class="form-control"
+        >
+
     </form>
 
     <div class="card shadow">
+
         <table class="table table-striped">
 
             <tr>
+
                 <th>Nombre</th>
+
                 <th>Documento</th>
+
                 <th>Acciones</th>
+
             </tr>
 
             {% for c in clientes %}
+
             <tr>
-                <td>{{ c.nombre }}</td>
-                <td>{{ c.documento }}</td>
+
                 <td>
-                    <a href="/productos/clientes/editar/{{ c.id }}" class="btn btn-warning btn-sm">Editar</a>
-                    <a href="/productos/clientes/eliminar/{{ c.id }}" class="btn btn-danger btn-sm">Eliminar</a>
+                    {{ c.nombre }}
                 </td>
+
+                <td>
+                    {{ c.documento }}
+                </td>
+
+                <td>
+
+                    {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.clientes %}
+
+                    <a
+                        href="/productos/clientes/editar/{{ c.id }}"
+                        class="btn btn-warning btn-sm"
+                    >
+                        Editar
+                    </a>
+
+                    <a
+                        href="/productos/clientes/eliminar/{{ c.id }}"
+                        class="btn btn-danger btn-sm"
+                    >
+                        Eliminar
+                    </a>
+
+                    {% endif %}
+
+                </td>
+
             </tr>
+
             {% endfor %}
 
         </table>
+
     </div>
 
 </div>

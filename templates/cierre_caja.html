@@ -5,25 +5,211 @@
 
 <div class="container mt-4">
 
-    <h2>🔒 Cierre de Caja</h2>
+    <div class="row justify-content-center">
 
-    <div class="card p-4 shadow">
+        <div class="col-lg-7">
 
-        <p><strong>Fecha apertura:</strong> {{ caja.fecha_apertura }}</p>
-        <p><strong>Fecha cierre:</strong> {{ caja.fecha_cierre }}</p>
+            <div class="card shadow border-0 rounded-4">
 
-        <hr>
+                <div class="card-body p-4">
 
-        <p>💵 Monto inicial: <strong>Gs. {{ caja.monto_inicial|intcomma }}</strong></p>
-        <p>💰 Ventas en efectivo: <strong>Gs. {{ efectivo|intcomma }}</strong></p>
-        <p>🏦 Transferencias: <strong>Gs. {{ transferencia|intcomma }}</strong></p>
+                    <h2 class="fw-bold mb-4">
+                        🔒 Cerrar Caja
+                    </h2>
 
-        <hr>
+                    <div class="alert alert-primary">
 
-        <h4>Total vendido: Gs. {{ total|intcomma }}</h4>
-        <h4>💸 Monto final en caja: Gs. {{ caja.monto_final|intcomma }}</h4>
+                        <strong>Caja #{{ caja.id }}</strong>
 
-        <a href="/ventas/" class="btn btn-primary mt-3">Volver al sistema</a>
+                        <br>
+
+                        Abrió:
+                        <strong>
+                            {{ caja.usuario.username }}
+                        </strong>
+
+                        <br>
+
+                        Apertura:
+                        {{ caja.fecha_apertura|date:"d/m/Y H:i" }}
+
+                    </div>
+
+
+                    <div class="row g-3 mb-4">
+
+                        <div class="col-md-6">
+
+                            <div class="card bg-light border-0">
+
+                                <div class="card-body">
+
+                                    <small class="text-muted">
+                                        Monto inicial
+                                    </small>
+
+                                    <h4 class="fw-bold">
+                                        Gs.
+                                        {{ caja.monto_inicial|intcomma }}
+                                    </h4>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="card bg-light border-0">
+
+                                <div class="card-body">
+
+                                    <small class="text-muted">
+                                        Ventas efectivo
+                                    </small>
+
+                                    <h4 class="fw-bold text-success">
+                                        Gs.
+                                        {{ efectivo|intcomma }}
+                                    </h4>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="card bg-light border-0">
+
+                                <div class="card-body">
+
+                                    <small class="text-muted">
+                                        Transferencias
+                                    </small>
+
+                                    <h4 class="fw-bold text-primary">
+                                        Gs.
+                                        {{ transferencia|intcomma }}
+                                    </h4>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <div class="card bg-light border-0">
+
+                                <div class="card-body">
+
+                                    <small class="text-muted">
+                                        Total vendido
+                                    </small>
+
+                                    <h4 class="fw-bold">
+                                        Gs.
+                                        {{ total_ventas|intcomma }}
+                                    </h4>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="alert alert-warning">
+
+                        <strong>
+                            💵 Efectivo esperado en caja:
+                        </strong>
+
+                        <h3 class="fw-bold mb-0 mt-2">
+                            Gs.
+                            {{ efectivo_esperado|intcomma }}
+                        </h3>
+
+                        <small>
+                            Monto inicial + ventas en efectivo.
+                        </small>
+
+                    </div>
+
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-bold">
+                                Efectivo contado
+                            </label>
+
+                            <div class="input-group">
+
+                                <span class="input-group-text">
+                                    Gs.
+                                </span>
+
+                                <input
+                                    type="number"
+                                    name="efectivo_contado"
+                                    class="form-control form-control-lg"
+                                    min="0"
+                                    step="1"
+                                    required
+                                >
+
+                            </div>
+
+                            <small class="text-muted">
+                                Contá físicamente el dinero que quedó en la caja.
+                            </small>
+
+                        </div>
+
+
+                        <div class="mb-4">
+
+                            <label class="form-label fw-bold">
+                                Observaciones
+                            </label>
+
+                            <textarea
+                                name="observaciones"
+                                class="form-control"
+                                rows="3"
+                                placeholder="Opcional: faltante, sobrante, retiro de dinero, etc."
+                            ></textarea>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-danger btn-lg w-100"
+                        >
+                            🔒 Confirmar Cierre de Caja
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 

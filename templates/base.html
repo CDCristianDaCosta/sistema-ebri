@@ -1,225 +1,1022 @@
+{% load static %}
+
 <!DOCTYPE html>
+
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Ventas</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
 
-    <!-- FontAwesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    <style>
+<title>E-BRI Tienda</title>
 
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
+<!-- Bootstrap -->
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+>
+
+<!-- Font Awesome -->
+<link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    rel="stylesheet"
+>
+
+<style>
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+
+        --ebri-blue: #081450;
+        --ebri-blue-light: #101d70;
+        --ebri-blue-hover: #162784;
+
+        --ebri-gold: #d4af37;
+        --ebri-gold-light: #f1d878;
+
+        --background: #f4f6fa;
+        --card: #ffffff;
+
+        --text: #1f2937;
+        --muted: #6b7280;
+
+        --border: #e5e7eb;
+    }
+
+
+    body {
+
+        background: var(--background);
+
+        color: var(--text);
+
+        font-family:
+            "Segoe UI",
+            Arial,
+            sans-serif;
+
+        overflow-x: hidden;
+    }
+
+
+    /* =================================
+       SIDEBAR
+    ================================= */
+
+    .sidebar {
+
+        position: fixed;
+
+        top: 0;
+        left: 0;
+
+        width: 270px;
+
+        height: 100vh;
+
+        background:
+            linear-gradient(
+                180deg,
+                var(--ebri-blue),
+                #050b2d
+            );
+
+        color: white;
+
+        padding: 18px 15px;
+
+        overflow-y: auto;
+
+        z-index: 1000;
+
+        box-shadow:
+            5px 0 20px
+            rgba(0,0,0,0.10);
+
+        transition: 0.3s ease;
+    }
+
+
+    /* =================================
+       LOGO
+    ================================= */
+
+    .logo-area {
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        padding:
+            5px 10px 20px;
+
+        margin-bottom: 10px;
+
+        border-bottom:
+            1px solid
+            rgba(255,255,255,0.12);
+    }
+
+
+    .logo-ebri {
+
+        width: 135px;
+
+        height: 135px;
+
+        object-fit: contain;
+
+        border-radius: 18px;
+
+        background: white;
+
+        padding: 5px;
+
+        box-shadow:
+            0 8px 25px
+            rgba(0,0,0,0.25);
+    }
+
+
+    /* =================================
+       USUARIO
+    ================================= */
+
+    .user-box {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 12px;
+
+        padding: 12px;
+
+        margin:
+            15px 5px 20px;
+
+        border-radius: 14px;
+
+        background:
+            rgba(255,255,255,0.08);
+
+        border:
+            1px solid
+            rgba(255,255,255,0.06);
+    }
+
+
+    .user-icon {
+
+        width: 42px;
+
+        height: 42px;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        border-radius: 50%;
+
+        background: white;
+
+        color: var(--ebri-blue);
+
+        font-size: 18px;
+
+        flex-shrink: 0;
+    }
+
+
+    .user-info {
+
+        min-width: 0;
+    }
+
+
+    .user-name {
+
+        font-weight: 600;
+
+        font-size: 14px;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-overflow: ellipsis;
+    }
+
+
+    .user-role {
+
+        font-size: 12px;
+
+        color: #cbd5e1;
+
+        margin-top: 2px;
+    }
+
+
+    /* =================================
+       MENU
+    ================================= */
+
+    .menu-title {
+
+        color: #94a3b8;
+
+        font-size: 11px;
+
+        font-weight: 700;
+
+        text-transform: uppercase;
+
+        letter-spacing: 1.2px;
+
+        margin:
+            22px 10px
+            10px;
+    }
+
+
+    .sidebar a {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 13px;
+
+        color: #e5e7eb;
+
+        text-decoration: none;
+
+        padding: 12px 14px;
+
+        margin-bottom: 5px;
+
+        border-radius: 10px;
+
+        font-size: 14px;
+
+        transition:
+            background 0.2s,
+            transform 0.2s,
+            color 0.2s;
+    }
+
+
+    .sidebar a:hover {
+
+        background:
+            rgba(255,255,255,0.12);
+
+        color: white;
+
+        transform:
+            translateX(3px);
+    }
+
+
+    .sidebar a i {
+
+        width: 22px;
+
+        text-align: center;
+
+        font-size: 16px;
+    }
+
+
+    /* =================================
+       ADMINISTRACION
+    ================================= */
+
+    .admin-link {
+
+        border:
+            1px solid
+            rgba(212,175,55,0.20);
+    }
+
+
+    .admin-link:hover {
+
+        background:
+            rgba(212,175,55,0.15)
+            !important;
+    }
+
+
+    /* =================================
+       CERRAR SESION
+    ================================= */
+
+    .logout-link {
+
+        margin-top: 20px;
+
+        border-top:
+            1px solid
+            rgba(255,255,255,0.12);
+
+        padding-top: 15px;
+    }
+
+
+    /* =================================
+       CONTENIDO
+    ================================= */
+
+    .content {
+
+        margin-left: 270px;
+
+        min-height: 100vh;
+
+        padding: 30px;
+    }
+
+
+    /* =================================
+       TOPBAR
+    ================================= */
+
+    .topbar {
+
+        background: white;
+
+        border-radius: 16px;
+
+        padding:
+            16px 22px;
+
+        margin-bottom: 25px;
+
+        box-shadow:
+            0 4px 18px
+            rgba(15,23,42,0.06);
+
+        border:
+            1px solid
+            var(--border);
+
+        display: flex;
+
+        justify-content:
+            space-between;
+
+        align-items: center;
+    }
+
+
+    .topbar-title {
+
+        font-size: 20px;
+
+        font-weight: 700;
+
+        color:
+            var(--ebri-blue);
+    }
+
+
+    .topbar-subtitle {
+
+        color:
+            var(--muted);
+
+        font-size: 13px;
+
+        margin-top: 2px;
+    }
+
+
+    .brand-mini {
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 10px;
+    }
+
+
+    .brand-mini img {
+
+        width: 50px;
+
+        height: 50px;
+
+        object-fit: contain;
+
+        border-radius: 10px;
+
+        background: white;
+    }
+
+
+    /* =================================
+       BOTONES
+    ================================= */
+
+    .btn-primary {
+
+        background:
+            var(--ebri-blue);
+
+        border-color:
+            var(--ebri-blue);
+    }
+
+
+    .btn-primary:hover {
+
+        background:
+            var(--ebri-blue-hover);
+
+        border-color:
+            var(--ebri-blue-hover);
+    }
+
+
+    /* =================================
+       CARDS
+    ================================= */
+
+    .card {
+
+        border:
+            1px solid
+            var(--border);
+
+        border-radius: 16px;
+
+        box-shadow:
+            0 4px 15px
+            rgba(15,23,42,0.05);
+    }
+
+
+    /* =================================
+       TITULOS
+    ================================= */
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+
+        color:
+            var(--ebri-blue);
+    }
+
+
+    /* =================================
+       TABLAS
+    ================================= */
+
+    .table {
+
+        background: white;
+    }
+
+
+    .table thead {
+
+        background:
+            var(--ebri-blue);
+
+        color: white;
+    }
+
+
+    /* =================================
+       IMAGENES
+    ================================= */
+
+    img {
+
+        transition:
+            transform 0.25s ease;
+    }
+
+
+    /* =================================
+       BOTON MOBILE
+    ================================= */
+
+    .mobile-toggle {
+
+        display: none;
+
+        position: fixed;
+
+        top: 15px;
+
+        left: 15px;
+
+        z-index: 1100;
+
+        background:
+            var(--ebri-blue);
+
+        color: white;
+
+        border: none;
+
+        width: 45px;
+
+        height: 45px;
+
+        border-radius: 12px;
+
+        font-size: 18px;
+
+        box-shadow:
+            0 5px 15px
+            rgba(0,0,0,0.2);
+    }
+
+
+    /* =================================
+       MOBILE
+    ================================= */
+
+    @media (max-width: 992px) {
+
+        .sidebar {
+
+            left: -270px;
         }
 
-        body{
-            background:#f4f6f9;
-            overflow-x:hidden;
+
+        .sidebar.active {
+
+            left: 0;
         }
 
-        /* SIDEBAR */
-        .sidebar{
-            position:fixed;
-            left:0;
-            top:0;
-            width:260px;
-            height:100vh;
-            background:#111827;
-            color:white;
-            padding:20px;
-            overflow-y:auto;
-            transition:.3s;
-            z-index:999;
+
+        .content {
+
+            margin-left: 0;
+
+            padding:
+                75px 15px 20px;
         }
 
-        .logo{
-            font-size:30px;
-            font-weight:bold;
-            margin-bottom:30px;
-            text-align:center;
+
+        .mobile-toggle {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
         }
 
-        .menu-title{
-            color:#9ca3af;
-            font-size:13px;
-            text-transform:uppercase;
-            margin-top:25px;
-            margin-bottom:10px;
-            letter-spacing:1px;
+
+        .topbar {
+
+            padding:
+                14px 16px;
         }
 
-        .sidebar a{
-            display:flex;
-            align-items:center;
-            gap:12px;
-            color:#fff;
-            text-decoration:none;
-            padding:14px 16px;
-            margin-bottom:8px;
-            border-radius:12px;
-            transition:.2s;
-            font-size:16px;
+
+        .topbar-title {
+
+            font-size: 17px;
         }
 
-        .sidebar a:hover{
-            background:#2563eb;
-            transform:translateX(4px);
+
+        .brand-mini img {
+
+            width: 42px;
+
+            height: 42px;
         }
+    }
 
-        .sidebar a i{
-            width:22px;
-        }
 
-        /* CONTENIDO */
-        .content{
-            margin-left:260px;
-            padding:30px;
-            min-height:100vh;
-        }
+    /* =================================
+       SCROLLBAR
+    ================================= */
 
-        /* BOTON MENU MOBILE */
-        .mobile-toggle{
-            display:none;
-            position:fixed;
-            top:15px;
-            left:15px;
-            z-index:1000;
-            background:#2563eb;
-            color:white;
-            border:none;
-            padding:10px 15px;
-            border-radius:10px;
-            font-size:20px;
-        }
+    .sidebar::-webkit-scrollbar {
 
-        /* IMAGEN PRODUCTOS */
-        img{
-            transition:0.3s;
-            border-radius:10px;
-        }
+        width: 5px;
+    }
 
-        img:hover{
-            transform:scale(1.08);
-        }
 
-        /* RESPONSIVE */
-        @media(max-width:992px){
+    .sidebar::-webkit-scrollbar-thumb {
 
-            .sidebar{
-                left:-260px;
-            }
+        background:
+            rgba(255,255,255,0.2);
 
-            .sidebar.active{
-                left:0;
-            }
+        border-radius: 10px;
+    }
 
-            .content{
-                margin-left:0;
-                padding:70px 15px 20px;
-            }
+</style>
 
-            .mobile-toggle{
-                display:block;
-            }
-        }
-
-    </style>
 </head>
 
 <body>
 
-<button class="mobile-toggle" onclick="toggleSidebar()">
+<!-- =================================
+     BOTON MOBILE
+================================= -->
+
+<button
+class="mobile-toggle"
+onclick="toggleSidebar()"
+>
+
     <i class="fas fa-bars"></i>
+
 </button>
 
-<!-- MENU -->
-<div class="sidebar" id="sidebar">
 
-    <div class="logo">
-        💼 Sistema
+<!-- =================================
+     SIDEBAR
+================================= -->
+
+<div
+    class="sidebar"
+    id="sidebar"
+>
+
+<!-- LOGO -->
+
+<div class="logo-area">
+
+    <img
+        src="{% static 'img/logo-ebri.jpg' %}"
+        class="logo-ebri"
+        alt="E-BRI Tienda"
+    >
+
+</div>
+
+
+<!-- USUARIO -->
+
+<div class="user-box">
+
+    <div class="user-icon">
+
+        <i class="fas fa-user"></i>
+
     </div>
 
-    <div class="menu-title">
-        Principal
+
+    <div class="user-info">
+
+        <div class="user-name">
+
+            {{ request.user.username }}
+
+        </div>
+
+
+        <div class="user-role">
+
+            {% if request.user.groups.all.0.name == "Admin" %}
+
+                Administrador
+
+            {% else %}
+
+                Cajero
+
+            {% endif %}
+
+        </div>
+
     </div>
 
-    <a href="/dashboard/">
-        <i class="fas fa-home"></i> Inicio
-    </a>
+</div>
 
-    <a href="/productos/">
-        <i class="fas fa-box"></i> Productos
-    </a>
 
-    <a href="/ventas/">
-        <i class="fas fa-cash-register"></i> Ventas
-    </a>
+<!-- PRINCIPAL -->
 
-    <a href="/productos/clientes/">
-        <i class="fas fa-users"></i> Clientes
-    </a>
+<div class="menu-title">
 
-    <a href="/productos/proveedores/">
-        <i class="fas fa-truck"></i> Proveedores
-    </a>
+    Principal
 
-    <a href="/productos/compras/">
-        <i class="fas fa-cart-shopping"></i> Compras
-    </a>
+</div>
 
-    <div class="menu-title">
-        Reportes
-    </div>
 
-    <a href="/ventas/reporte/">
-        <i class="fas fa-chart-bar"></i> Reportes
-    </a>
+<a href="/dashboard/">
 
-    <a href="/ventas/grafico/">
-        <i class="fas fa-chart-line"></i> Estadísticas
-    </a>
+    <i class="fas fa-house"></i>
 
-    <div class="menu-title">
-        Caja
-    </div>
+    Inicio
 
-    <a href="/ventas/caja/abrir/">
-        <i class="fas fa-lock-open"></i> Abrir Caja
-    </a>
+</a>
 
-    <a href="/ventas/caja/cerrar/">
-        <i class="fas fa-lock"></i> Cerrar Caja
-    </a>
 
-    <hr style="border-color:#374151;">
+<!-- PRODUCTOS -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.ver_productos %}
+
+<a href="/productos/">
+
+    <i class="fas fa-box"></i>
+
+    Productos
+
+</a>
+
+{% endif %}
+
+
+<!-- VENTAS -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.realizar_ventas %}
+
+<a href="/ventas/">
+
+    <i class="fas fa-cash-register"></i>
+
+    Ventas
+
+</a>
+
+{% endif %}
+
+
+<!-- CLIENTES -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.clientes %}
+
+<a href="/productos/clientes/">
+
+    <i class="fas fa-users"></i>
+
+    Clientes
+
+</a>
+
+{% endif %}
+
+
+<!-- PROVEEDORES -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.proveedores %}
+
+<a href="/productos/proveedores/">
+
+    <i class="fas fa-truck"></i>
+
+    Proveedores
+
+</a>
+
+{% endif %}
+
+
+<!-- COMPRAS -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.compras %}
+
+<a href="/productos/compras/">
+
+    <i class="fas fa-cart-shopping"></i>
+
+    Compras
+
+</a>
+
+{% endif %}
+
+
+<!-- REPORTES -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.reporte_ventas or request.user.permisos.graficos %}
+
+<div class="menu-title">
+
+    Reportes
+
+</div>
+
+{% endif %}
+
+
+<!-- REPORTE DE VENTAS -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.reporte_ventas %}
+
+<a href="/ventas/reporte/">
+
+    <i class="fas fa-chart-column"></i>
+
+    Reportes
+
+</a>
+
+{% endif %}
+
+
+<!-- ESTADISTICAS -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.graficos %}
+
+<a href="/ventas/grafico/">
+
+    <i class="fas fa-chart-line"></i>
+
+    Estadísticas
+
+</a>
+
+{% endif %}
+
+
+<!-- CAJA -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.caja %}
+
+<div class="menu-title">
+
+    Caja
+
+</div>
+
+
+<a href="/ventas/caja/abrir/">
+
+    <i class="fas fa-lock-open"></i>
+
+    Abrir Caja
+
+</a>
+
+
+<a href="/ventas/caja/cerrar/">
+
+    <i class="fas fa-lock"></i>
+
+    Cerrar Caja
+
+</a>
+
+
+<a href="/ventas/caja/historial/">
+
+    <i class="fas fa-clock-rotate-left"></i>
+
+    Historial de Caja
+
+</a>
+
+{% endif %}
+
+
+<!-- ADMINISTRACION -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.usuarios or request.user.permisos.administracion_tecnica %}
+
+<div class="menu-title">
+
+    Administración
+
+</div>
+
+{% endif %}
+
+
+<!-- USUARIOS -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.usuarios %}
+
+<a
+    href="/usuarios/"
+    class="admin-link"
+>
+
+    <i class="fas fa-users-gear"></i>
+
+    Usuarios
+
+</a>
+
+{% endif %}
+
+
+<!-- AUDITORÍA -->
+
+{% if request.user.groups.all.0.name == "Admin" or request.user.permisos.administracion_tecnica %}
+
+<a
+    href="/auditoria/"
+    class="admin-link"
+>
+
+    <i class="fas fa-shield-halved"></i>
+
+    Auditoría
+
+</a>
+
+{% endif %}
+
+
+<!-- SALIR -->
+
+<div class="logout-link">
 
     <a href="/admin/logout/">
-        <i class="fas fa-right-from-bracket"></i> Cerrar sesión
+
+        <i class="fas fa-right-from-bracket"></i>
+
+        Cerrar sesión
+
     </a>
 
 </div>
 
-<!-- CONTENIDO -->
-<div class="content">
-    {% block content %}
-    {% endblock %}
+
 </div>
+
+
+<!-- =================================
+     CONTENIDO
+================================= -->
+
+<div class="content">
+
+
+<!-- TOPBAR -->
+
+<div class="topbar">
+
+    <div>
+
+        <div class="topbar-title">
+
+            E-BRI TIENDA
+
+        </div>
+
+        <div class="topbar-subtitle">
+
+            Sistema de gestión comercial
+
+        </div>
+
+    </div>
+
+
+    <div class="brand-mini">
+
+        <img
+            src="{% static 'img/logo-ebri.jpg' %}"
+            alt="E-BRI"
+        >
+
+    </div>
+
+</div>
+
+
+<!-- CONTENIDO DE LA PAGINA -->
+
+{% block content %}
+
+{% endblock %}
+
+
+</div>
+
 
 <script>
 
-function toggleSidebar(){
-    document.getElementById("sidebar")
-    .classList.toggle("active");
+function toggleSidebar() {
+
+    document
+        .getElementById("sidebar")
+        .classList
+        .toggle("active");
+
 }
 
 </script>
 
 </body>
+
 </html>

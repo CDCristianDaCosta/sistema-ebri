@@ -1,7 +1,9 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
+
     <title>Factura</title>
 
     <style>
@@ -19,10 +21,32 @@
         table {
             width: 100%;
             font-size: 12px;
+            border-collapse: collapse;
         }
 
         th, td {
             text-align: left;
+            padding: 2px 0;
+            vertical-align: top;
+        }
+
+        .producto {
+            width: 55%;
+        }
+
+        .cantidad {
+            width: 15%;
+            text-align: center;
+        }
+
+        .precio {
+            width: 30%;
+            text-align: right;
+        }
+
+        .variante {
+            font-size: 11px;
+            color: #555;
         }
 
         .total {
@@ -35,9 +59,18 @@
             text-align: center;
         }
 
+        .no-print button {
+            margin: 3px;
+            padding: 6px 10px;
+        }
+
         @media print {
             .no-print {
                 display: none;
+            }
+
+            body {
+                width: 300px;
             }
         }
     </style>
@@ -45,34 +78,52 @@
 
 <body>
 
-    <!-- 🏢 EMPRESA -->
+    <!-- ========================= -->
+    <!-- EMPRESA -->
+    <!-- ========================= -->
+
     <h2>{{ negocio.nombre }}</h2>
 
-<p>
-    RUC:
-    {% if negocio.ruc %}
-        {{ negocio.ruc }}
-    {% else %}
-        Sin RUC
-    {% endif %}
-</p>
+    <p>
+        RUC:
+        {% if negocio.ruc %}
+            {{ negocio.ruc }}
+        {% else %}
+            Sin RUC
+        {% endif %}
+    </p>
 
-<p>
-    Timbrado:
-    {% if negocio.timbrado %}
-        {{ negocio.timbrado }}
-    {% else %}
-        Sin timbrado
-    {% endif %}
-</p>
+    <p>
+        Timbrado:
+        {% if negocio.timbrado %}
+            {{ negocio.timbrado }}
+        {% else %}
+            Sin timbrado
+        {% endif %}
+    </p>
 
-<p>
-    Factura N°:
-    {{ venta.numero_factura }}
-</p>
+    <p>
+        Factura N°:
+        {% if venta.numero_factura %}
+            {{ venta.numero_factura }}
+        {% else %}
+            -
+        {% endif %}
+    </p>
 
-    <!-- 👤 CLIENTE -->
-    <p><strong>Cliente:</strong> 
+    <p>
+        Fecha:
+        {{ venta.fecha|date:"d/m/Y H:i" }}
+    </p>
+
+
+    <!-- ========================= -->
+    <!-- CLIENTE -->
+    <!-- ========================= -->
+
+    <p>
+        <strong>Cliente:</strong>
+
         {% if venta.cliente %}
             {{ venta.cliente.nombre }}
         {% else %}
@@ -80,7 +131,9 @@
         {% endif %}
     </p>
 
-    <p><strong>RUC/CI:</strong> 
+    <p>
+        <strong>RUC/CI:</strong>
+
         {% if venta.cliente and venta.cliente.documento %}
             {{ venta.cliente.documento }}
         {% else %}
@@ -90,69 +143,156 @@
 
     <hr>
 
-    <!-- 🛒 PRODUCTOS -->
+
+    <!-- ========================= -->
+    <!-- PRODUCTOS -->
+    <!-- ========================= -->
+
     <table>
+
         <tr>
-            <th>Prod</th>
-            <th>Cant</th>
-            <th>Gs</th>
+            <th class="producto">
+                Producto
+            </th>
+
+            <th class="cantidad">
+                Cant.
+            </th>
+
+            <th class="precio">
+                Importe
+            </th>
         </tr>
 
         {% for d in detalles %}
-<tr>
-    <td>{{ d.producto.nombre }}</td>
-    <td>{{ d.cantidad }}</td>
-    <td>{{ d.precio|floatformat:0 }}</td>
-</tr>
-{% endfor %}
+
+        <tr>
+
+            <td class="producto">
+
+                {{ d.producto.nombre }}
+
+                {% if d.variante %}
+                    <div class="variante">
+
+                        {{ d.variante.nombre }}
+
+                        {% if d.variante.color %}
+                            | {{ d.variante.color }}
+                        {% endif %}
+
+                        {% if d.variante.talle %}
+                            | Talle {{ d.variante.talle }}
+                        {% endif %}
+
+                        {% if d.variante.medida %}
+                            | {{ d.variante.medida }}
+                        {% endif %}
+
+                    </div>
+                {% endif %}
+
+            </td>
+
+            <td class="cantidad">
+                {{ d.cantidad }}
+            </td>
+
+            <td class="precio">
+
+                {{ d.subtotal|floatformat:0 }}
+
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
     </table>
 
     <hr>
 
-    <!-- 💰 TOTALES -->
-    <!-- 💰 TOTALES -->
-<!-- 💰 TOTALES -->
 
-<p>
-    Subtotal:
-    {{ venta.total|add:venta.descuento|floatformat:0 }}
-</p>
+    <!-- ========================= -->
+    <!-- TOTALES -->
+    <!-- ========================= -->
 
-{% if venta.descuento > 0 %}
-<p>
-    Descuento:
-    -{{ venta.descuento|floatformat:0 }}
-</p>
-{% endif %}
+    <p>
+        Subtotal:
+        {{ venta.total|add:venta.descuento|floatformat:0 }}
+    </p>
 
-<p class="total">
-    TOTAL:
-    {{ venta.total|floatformat:0 }}
-</p>
+    {% if venta.descuento > 0 %}
 
-<p>
-    Pago:
-    {{ venta.pago|floatformat:0 }}
-</p>
+    <p>
+        Descuento:
+        -{{ venta.descuento|floatformat:0 }}
+    </p>
 
-<p>
-    Vuelto:
-    {{ venta.vuelto|floatformat:0 }}
-</p>
+    {% endif %}
 
-<p>
-    Tipo:
-    {{ venta.tipo_pago }}
-</p>
+    <p class="total">
+
+        TOTAL:
+        {{ venta.total|floatformat:0 }}
+
+    </p>
+
+    <p>
+
+        Pago:
+        {{ venta.pago|floatformat:0 }}
+
+    </p>
+
+    <p>
+
+        Vuelto:
+        {{ venta.vuelto|floatformat:0 }}
+
+    </p>
+
+    <p>
+
+        Tipo:
+        {{ venta.tipo_pago }}
+
+    </p>
+
     <hr>
 
-    <p>Gracias por su compra</p>
 
+    <!-- ========================= -->
+    <!-- FINAL -->
+    <!-- ========================= -->
+
+    <p>
+        Gracias por su compra
+    </p>
+
+
+    <!-- ========================= -->
     <!-- BOTONES -->
+    <!-- ========================= -->
+
     <div class="no-print">
-        <button onclick="window.print()">🖨 Imprimir</button>
-        <a href="/ventas/"><button>⬅ Volver</button></a>
-        <a href="/ventas/pdf/{{ venta.id }}/"><button>📄 PDF</button></a>
+
+        <button onclick="window.print()">
+            🖨 Imprimir
+        </button>
+
+        <a href="/ventas/">
+            <button>
+                ⬅ Volver
+            </button>
+        </a>
+
+        <a href="/ventas/pdf/{{ venta.id }}/">
+            <button>
+                📄 PDF
+            </button>
+        </a>
+
     </div>
 
 </body>

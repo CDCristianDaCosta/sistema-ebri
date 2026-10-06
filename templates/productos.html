@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load humanize %}
+
 {% block content %}
 
 <div class="container-fluid">
@@ -9,120 +10,238 @@
         <h2 class="fw-bold">
             📦 Productos
         </h2>
-    
+
         <div class="d-flex gap-2">
-    
+
+            {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.ver_productos %}
+
             <a
                 href="/productos/excel/"
                 class="btn btn-primary"
             >
                 📥 Descargar Excel
             </a>
-    
-            {% if request.user.groups.all.0.name == "Admin" %}
+
+            {% endif %}
+
+
+            {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.agregar_producto %}
+
             <a
                 href="/productos/agregar/"
                 class="btn btn-success"
             >
                 ➕ Agregar Producto
             </a>
+
             {% endif %}
-    
+
         </div>
-    
+
     </div>
 
+
     <!-- BUSCADOR -->
+
     <div class="mb-4">
 
         <input
             type="text"
             id="buscarProducto"
             class="form-control form-control-lg"
-            placeholder="🔍 Buscar por nombre o código..."
+            placeholder="🔍 Buscar por nombre, código, color o talle..."
         >
 
     </div>
 
+
+    <!-- TABLA -->
+
     <div class="table-responsive shadow rounded">
 
-        <table class="table table-hover table-striped align-middle"
-               id="tabla-productos">
+        <table
+            class="table table-hover table-striped align-middle"
+            id="tabla-productos"
+        >
 
             <thead class="table-dark">
-                <tr>
-                    <th>Imagen</th>
-                    <th>Código</th>
-                    <th>Producto</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
 
-                    {% if request.user.groups.all.0.name == "Admin" %}
+                <tr>
+
+                    <th>Imagen</th>
+
+                    <th>Código</th>
+
+                    <th>Producto</th>
+
+                    <th>Precio</th>
+
+                    <th>Variantes</th>
+
+                    <th>Stock total</th>
+
+
+                    {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.editar_producto or request.user.permisos.eliminar_producto %}
+
                     <th>Acciones</th>
+
                     {% endif %}
+
                 </tr>
+
             </thead>
+
 
             <tbody>
 
                 {% for p in productos %}
+
                 <tr>
 
+                    <!-- IMAGEN -->
+
                     <td>
+
                         {% if p.imagen %}
+
                         <img
                             src="{{ p.imagen.url }}"
                             width="70"
+                            height="70"
+                            style="object-fit: cover;"
                             class="rounded shadow-sm"
                         >
+
                         {% endif %}
+
                     </td>
+
+
+                    <!-- CODIGO -->
 
                     <td class="fw-bold text-primary">
+
                         {{ p.codigo }}
+
                     </td>
 
+
+                    <!-- PRODUCTO -->
+
                     <td>
-                        {{ p.nombre }}
+
+                        <strong>
+                            {{ p.nombre }}
+                        </strong>
+
+                        {% if p.descripcion %}
+
+                        <br>
+
+                        <small class="text-muted">
+                            {{ p.descripcion }}
+                        </small>
+
+                        {% endif %}
+
                     </td>
+
+
+                    <!-- PRECIO -->
 
                     <td class="precio-producto fw-bold text-success">
+
                         Gs. {{ p.precio|floatformat:0 }}
+
                     </td>
+
+
+                    <!-- VARIANTES -->
 
                     <td>
 
-                        {{ p.stock }}
+                        {% for variante in p.variantes.all %}
 
-                        {% if p.stock <= 5 %}
+                        <div class="mb-1">
+
+                            <span class="badge bg-secondary">
+
+                                {{ variante.nombre }}
+
+                            </span>
+
+                        </div>
+
+                        {% empty %}
+
+                        <span class="text-muted">
+                            Sin variantes
+                        </span>
+
+                        {% endfor %}
+
+                    </td>
+
+
+                    <!-- STOCK -->
+
+                    <td>
+
+                        <strong>
+
+                            {{ p.stock_total }}
+
+                        </strong>
+
+                        {% if p.stock_total <= 5 %}
+
                         <span class="text-danger fw-bold">
                             ⚠ Bajo
                         </span>
+
                         {% endif %}
 
                     </td>
 
-                    {% if request.user.groups.all.0.name == "Admin" %}
+
+                    <!-- ACCIONES -->
+
+                    {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.editar_producto or request.user.permisos.eliminar_producto %}
+
                     <td>
+
+                        {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.editar_producto %}
 
                         <a
                             href="/productos/editar/{{ p.id }}/"
                             class="btn btn-warning btn-sm"
+                            title="Editar producto"
                         >
                             ✏️
                         </a>
 
+                        {% endif %}
+
+
+                        {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.eliminar_producto %}
+
                         <a
                             href="/productos/eliminar/{{ p.id }}/"
                             class="btn btn-danger btn-sm"
+                            onclick="return confirm('¿Eliminar este producto y todas sus variantes?');"
+                            title="Eliminar producto"
                         >
                             ❌
                         </a>
 
+                        {% endif %}
+
                     </td>
+
                     {% endif %}
 
                 </tr>
+
                 {% endfor %}
 
             </tbody>
@@ -133,18 +252,21 @@
 
 </div>
 
+
 <script>
 
-// buscador automático
-document.getElementById("buscarProducto")
-.addEventListener("input", function() {
+document
+.getElementById("buscarProducto")
+.addEventListener("input", function () {
 
     let texto =
         this.value.toLowerCase();
 
-    document.querySelectorAll(
+    document
+    .querySelectorAll(
         "#tabla-productos tbody tr"
-    ).forEach(row => {
+    )
+    .forEach(function (row) {
 
         let contenido =
             row.innerText.toLowerCase();
@@ -153,12 +275,15 @@ document.getElementById("buscarProducto")
             contenido.includes(texto)
             ? ""
             : "none";
+
     });
+
 });
 
-// FORMATEAR PRECIOS
-document.querySelectorAll(".precio-producto")
-.forEach(precio => {
+
+document
+.querySelectorAll(".precio-producto")
+.forEach(function (precio) {
 
     let numero =
         precio.innerText
@@ -170,7 +295,10 @@ document.querySelectorAll(".precio-producto")
             /\B(?=(\d{3})+(?!\d))/g,
             "."
         );
+
 });
+
 </script>
+
 
 {% endblock %}

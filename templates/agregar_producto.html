@@ -2,35 +2,431 @@
 
 {% block content %}
 
-<h2>Agregar Producto</h2>
+<div class="container">
 
-<form method="POST" enctype="multipart/form-data" class="card p-4">
-    {% csrf_token %}
-    <input type="text" name="codigo" placeholder="Código de producto" required>
+    <div class="card shadow p-4">
 
-    <div class="mb-3">
-        <label>Nombre</label>
-        <input type="text" name="nombre" class="form-control" required>
+        <h2 class="mb-4">
+            📦 Agregar Producto
+        </h2>
+
+        <form method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <!-- PRODUCTO GENERAL -->
+
+            <h4 class="mb-3">
+                Información del producto
+            </h4>
+
+            <div class="mb-3">
+                <label class="fw-bold">
+                    Código del producto
+                </label>
+
+                <input
+                    type="text"
+                    name="codigo"
+                    class="form-control"
+                    placeholder="Ej: JEAN001"
+                    required
+                >
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold">
+                    Nombre
+                </label>
+
+                <input
+                    type="text"
+                    name="nombre"
+                    class="form-control"
+                    placeholder="Ej: Jean clásico"
+                    required
+                >
+            </div>
+
+            <div class="mb-3">
+                <label class="fw-bold">
+                    Descripción
+                </label>
+
+                <textarea
+                    name="descripcion"
+                    class="form-control"
+                    rows="3"
+                    placeholder="Descripción del producto"
+                ></textarea>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Precio de venta
+                    </label>
+
+                    <input
+                        type="number"
+                        name="precio"
+                        class="form-control"
+                        min="0"
+                        required
+                    >
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Costo
+                    </label>
+
+                    <input
+                        type="number"
+                        name="costo"
+                        class="form-control"
+                        min="0"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="mb-4">
+
+                <label class="fw-bold">
+                    Imagen
+                </label>
+
+                <input
+                    type="file"
+                    name="imagen"
+                    class="form-control"
+                >
+
+            </div>
+
+
+            <!-- VARIANTES -->
+
+            <hr>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <h4 class="mb-0">
+                    Variantes del producto
+                </h4>
+
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    onclick="agregarVariante()"
+                >
+                    ➕ Agregar variante
+                </button>
+
+            </div>
+
+            <p class="text-muted">
+                Agregá las diferentes combinaciones de color, talle o medida.
+            </p>
+
+
+            <div id="variantes">
+
+                <!-- VARIANTE 1 -->
+
+                <div class="card p-3 mb-3 variante">
+
+                    <div class="d-flex justify-content-between mb-3">
+
+                        <h5>
+                            Variante 1
+                        </h5>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-3 mb-3">
+
+                            <label>
+                                Nombre de variante
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_nombre[]"
+                                class="form-control"
+                                placeholder="Ej: Azul / 38"
+                                required
+                            >
+
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+
+                            <label>
+                                Color
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_color[]"
+                                class="form-control"
+                                placeholder="Azul"
+                            >
+
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+
+                            <label>
+                                Talle
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_talle[]"
+                                class="form-control"
+                                placeholder="38"
+                            >
+
+                        </div>
+
+                        <div class="col-md-2 mb-3">
+
+                            <label>
+                                Medida
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_medida[]"
+                                class="form-control"
+                                placeholder="M"
+                            >
+
+                        </div>
+
+                        <div class="col-md-3 mb-3">
+
+                            <label>
+                                Código de variante
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_codigo[]"
+                                class="form-control"
+                                placeholder="JEAN001-AZ-38"
+                            >
+
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <label>
+                                Stock inicial
+                            </label>
+
+                            <input
+                                type="number"
+                                name="variante_stock[]"
+                                class="form-control"
+                                min="0"
+                                value="0"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="mt-4">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary btn-lg w-100"
+                >
+                    💾 Guardar Producto
+                </button>
+
+            </div>
+
+        </form>
+
     </div>
 
-    <div class="mb-3">
-        <label>Precio</label>
-        <input type="number" name="precio" class="form-control" required>
-    </div>
+</div>
 
-    <div class="mb-3">
-        <label>Stock</label>
-        <input type="number" name="stock" class="form-control" required>
-    </div>
 
-    <div class="mb-3">
-        <label>Imagen</label>
-        <input type="file" name="imagen" class="form-control">
-    </div>
-    <label>Costo</label>
-    <input type="number" name="costo" class="form-control" required>
-    <button class="btn btn-primary">Guardar</button>
+<script>
 
-</form>
+let numeroVariante = 1;
+
+
+function agregarVariante() {
+
+    numeroVariante++;
+
+    const contenedor =
+        document.getElementById("variantes");
+
+    const nuevaVariante =
+        document.createElement("div");
+
+    nuevaVariante.className =
+        "card p-3 mb-3 variante";
+
+
+    nuevaVariante.innerHTML = `
+
+        <div class="d-flex justify-content-between mb-3">
+
+            <h5>
+                Variante ${numeroVariante}
+            </h5>
+
+            <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                onclick="this.closest('.variante').remove()"
+            >
+                🗑 Eliminar
+            </button>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-md-3 mb-3">
+
+                <label>
+                    Nombre de variante
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_nombre[]"
+                    class="form-control"
+                    placeholder="Ej: Azul / 38"
+                    required
+                >
+
+            </div>
+
+
+            <div class="col-md-2 mb-3">
+
+                <label>
+                    Color
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_color[]"
+                    class="form-control"
+                    placeholder="Azul"
+                >
+
+            </div>
+
+
+            <div class="col-md-2 mb-3">
+
+                <label>
+                    Talle
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_talle[]"
+                    class="form-control"
+                    placeholder="38"
+                >
+
+            </div>
+
+
+            <div class="col-md-2 mb-3">
+
+                <label>
+                    Medida
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_medida[]"
+                    class="form-control"
+                    placeholder="M"
+                >
+
+            </div>
+
+
+            <div class="col-md-3 mb-3">
+
+                <label>
+                    Código de variante
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_codigo[]"
+                    class="form-control"
+                    placeholder="JEAN001-AZ-38"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-md-4">
+
+                <label>
+                    Stock inicial
+                </label>
+
+                <input
+                    type="number"
+                    name="variante_stock[]"
+                    class="form-control"
+                    min="0"
+                    value="0"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    contenedor.appendChild(nuevaVariante);
+
+}
+
+</script>
+
 
 {% endblock %}

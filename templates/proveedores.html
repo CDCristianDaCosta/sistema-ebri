@@ -5,26 +5,57 @@
 <div class="container mt-4">
 
     <div class="d-flex justify-content-between align-items-center">
+
         <h2>Proveedores</h2>
-        <a href="/productos/proveedores/agregar/" class="btn btn-success">+ Nuevo</a>
+
+        {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.proveedores %}
+
+        <a
+            href="/productos/proveedores/agregar/"
+            class="btn btn-success"
+        >
+            + Nuevo
+        </a>
+
+        {% endif %}
+
     </div>
 
     <div class="card shadow mt-3">
+
         <table class="table table-striped">
 
             <tr>
+
                 <th>Nombre</th>
+
                 <th>Teléfono</th>
+
                 <th>Dirección</th>
+
                 <th>Acciones</th>
+
             </tr>
 
             {% for p in proveedores %}
+
             <tr>
-                <td>{{ p.nombre }}</td>
-                <td>{{ p.telefono }}</td>
-                <td>{{ p.direccion }}</td>
+
                 <td>
+                    {{ p.nombre }}
+                </td>
+
+                <td>
+                    {{ p.telefono }}
+                </td>
+
+                <td>
+                    {{ p.direccion }}
+                </td>
+
+                <td>
+
+                    {% if request.user.groups.all.0.name == "Admin" or request.user.permisos.proveedores %}
 
                     <a
                         href="/productos/proveedores/editar/{{ p.id }}/"
@@ -32,19 +63,24 @@
                     >
                         ✏ Editar
                     </a>
-                
+
                     <a
                         href="/productos/proveedores/eliminar/{{ p.id }}/"
                         class="btn btn-danger btn-sm"
                     >
                         🗑 Eliminar
                     </a>
-                
+
+                    {% endif %}
+
                 </td>
+
             </tr>
+
             {% endfor %}
 
         </table>
+
     </div>
 
 </div>

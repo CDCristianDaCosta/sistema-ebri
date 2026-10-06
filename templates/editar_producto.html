@@ -1,28 +1,483 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<h2>Editar Producto</h2>
+<div class="container">
 
-<form method="POST" enctype="multipart/form-data" class="card p-4">
-    {% csrf_token %}
-    
-    <input type="text" name="nombre" value="{{ producto.nombre }}" class="form-control mb-2" placeholder="Nombre del Producto">
-    <input type="number" name="precio" value="{{ producto.precio }}" class="form-control mb-2" placeholder="Precio del Producto">
-    <input type="number" name="stock" value="{{ producto.stock }}" class="form-control mb-2" placeholder="Stock del Producto">
-    <label>Costo</label>
-<input type="number"
-       name="costo"
-       class="form-control"
-       value="{{ producto.costo }}" placeholder="Costo del Producto">
-    <div class="mb-3">
-        <label>Imagen</label>
-        <input type="file" name="imagen" class="form-control">
+    <div class="card shadow p-4">
+
+        <h2 class="mb-4">
+            ✏️ Editar Producto
+        </h2>
+
+
+        <form
+            method="POST"
+            enctype="multipart/form-data"
+        >
+
+            {% csrf_token %}
+
+
+            <!-- PRODUCTO -->
+
+            <h4>
+                Información del producto
+            </h4>
+
+            <hr>
+
+
+            <div class="mb-3">
+
+                <label class="fw-bold">
+                    Código
+                </label>
+
+                <input
+                    type="text"
+                    name="codigo"
+                    value="{{ producto.codigo }}"
+                    class="form-control"
+                    required
+                >
+
+            </div>
+
+
+            <div class="mb-3">
+
+                <label class="fw-bold">
+                    Nombre
+                </label>
+
+                <input
+                    type="text"
+                    name="nombre"
+                    value="{{ producto.nombre }}"
+                    class="form-control"
+                    required
+                >
+
+            </div>
+
+
+            <div class="mb-3">
+
+                <label class="fw-bold">
+                    Descripción
+                </label>
+
+                <textarea
+                    name="descripcion"
+                    class="form-control"
+                    rows="3"
+                >{{ producto.descripcion }}</textarea>
+
+            </div>
+
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Precio de venta
+                    </label>
+
+                    <input
+                        type="number"
+                        name="precio"
+                        value="{{ producto.precio }}"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="fw-bold">
+                        Costo
+                    </label>
+
+                    <input
+                        type="number"
+                        name="costo"
+                        value="{{ producto.costo }}"
+                        class="form-control"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <!-- IMAGEN -->
+
+            <div class="mb-4">
+
+                <label class="fw-bold">
+                    Imagen
+                </label>
+
+                <input
+                    type="file"
+                    name="imagen"
+                    class="form-control"
+                >
+
+                {% if producto.imagen %}
+
+                <div class="mt-3">
+
+                    <img
+                        src="{{ producto.imagen.url }}"
+                        width="150"
+                        class="rounded shadow"
+                    >
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- VARIANTES -->
+
+            <hr>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <h4>
+                    Variantes
+                </h4>
+
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    onclick="agregarVariante()"
+                >
+                    ➕ Agregar variante
+                </button>
+
+            </div>
+
+
+            <div id="variantes">
+
+                {% for variante in producto.variantes.all %}
+
+                <div class="card p-3 mb-3 variante">
+
+                    <div class="d-flex justify-content-between mb-3">
+
+                        <h5>
+                            Variante
+                        </h5>
+
+                        <button
+                            type="button"
+                            class="btn btn-danger btn-sm"
+                            onclick="this.closest('.variante').remove()"
+                        >
+                            🗑 Eliminar
+                        </button>
+
+                    </div>
+
+
+                    <input
+                        type="hidden"
+                        name="variante_id[]"
+                        value="{{ variante.id }}"
+                    >
+
+
+                    <div class="row">
+
+                        <div class="col-md-3 mb-3">
+
+                            <label>
+                                Nombre
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_nombre[]"
+                                value="{{ variante.nombre }}"
+                                class="form-control"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-2 mb-3">
+
+                            <label>
+                                Color
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_color[]"
+                                value="{{ variante.color }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-2 mb-3">
+
+                            <label>
+                                Talle
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_talle[]"
+                                value="{{ variante.talle }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-2 mb-3">
+
+                            <label>
+                                Medida
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_medida[]"
+                                value="{{ variante.medida }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+
+                        <div class="col-md-3 mb-3">
+
+                            <label>
+                                Código
+                            </label>
+
+                            <input
+                                type="text"
+                                name="variante_codigo[]"
+                                value="{{ variante.codigo }}"
+                                class="form-control"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="row">
+
+                        <div class="col-md-4">
+
+                            <label>
+                                Stock
+                            </label>
+
+                            <input
+                                type="number"
+                                name="variante_stock[]"
+                                value="{{ variante.stock }}"
+                                class="form-control"
+                                min="0"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="btn btn-primary btn-lg w-100 mt-3"
+            >
+                💾 Guardar cambios
+            </button>
+
+        </form>
+
     </div>
-    {% if producto.imagen %}
-    <img src="{{ producto.imagen.url }}" width="200">
-{% endif %}
-    <button class="btn btn-primary">Actualizar</button>
 
-</form>
+</div>
+
+
+<script>
+
+function agregarVariante() {
+
+    const contenedor =
+        document.getElementById("variantes");
+
+    const nuevaVariante =
+        document.createElement("div");
+
+    nuevaVariante.className =
+        "card p-3 mb-3 variante";
+
+
+    nuevaVariante.innerHTML = `
+
+        <div class="d-flex justify-content-between mb-3">
+
+            <h5>
+                Nueva variante
+            </h5>
+
+            <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                onclick="this.closest('.variante').remove()"
+            >
+                🗑 Eliminar
+            </button>
+
+        </div>
+
+
+        <input
+            type="hidden"
+            name="variante_id[]"
+            value=""
+        >
+
+
+        <div class="row">
+
+            <div class="col-md-3 mb-3">
+
+                <label>
+                    Nombre
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_nombre[]"
+                    class="form-control"
+                    placeholder="Ej: Azul / 38"
+                    required
+                >
+
+            </div>
+
+
+            <div class="col-md-2 mb-3">
+
+                <label>
+                    Color
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_color[]"
+                    class="form-control"
+                    placeholder="Azul"
+                >
+
+            </div>
+
+
+            <div class="col-md-2 mb-3">
+
+                <label>
+                    Talle
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_talle[]"
+                    class="form-control"
+                    placeholder="38"
+                >
+
+            </div>
+
+
+            <div class="col-md-2 mb-3">
+
+                <label>
+                    Medida
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_medida[]"
+                    class="form-control"
+                    placeholder="M"
+                >
+
+            </div>
+
+
+            <div class="col-md-3 mb-3">
+
+                <label>
+                    Código
+                </label>
+
+                <input
+                    type="text"
+                    name="variante_codigo[]"
+                    class="form-control"
+                    placeholder="JEAN001-AZ-38"
+                >
+
+            </div>
+
+        </div>
+
+
+        <div class="row">
+
+            <div class="col-md-4">
+
+                <label>
+                    Stock
+                </label>
+
+                <input
+                    type="number"
+                    name="variante_stock[]"
+                    class="form-control"
+                    value="0"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    contenedor.appendChild(nuevaVariante);
+
+}
+
+</script>
+
 
 {% endblock %}
