@@ -293,6 +293,7 @@ class PermisoUsuario(models.Model):
     )
 
     realizar_ventas = models.BooleanField(default=True)
+    aplicar_descuentos = models.BooleanField(default=False)
 
     ver_productos = models.BooleanField(default=True)
 

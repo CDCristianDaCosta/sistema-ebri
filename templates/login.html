@@ -1,41 +1,42 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
+    <title>Iniciar Sesión | E-BRI</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-
-        body{
-            background: linear-gradient(135deg,#1e1e2f,#3d4b6e);
-            height:100vh;
-            display:flex;
-            justify-content:center;
-            align-items:center;
+        body {
+            background: linear-gradient(135deg, #1e1e2f, #3d4b6e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        .login-card{
-            width:100%;
-            max-width:400px;
-            border-radius:20px;
-            padding:30px;
-            background:white;
-            box-shadow:0 10px 30px rgba(0,0,0,.2);
+        .login-card {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 30px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .2);
         }
 
-        .logo{
-            text-align:center;
-            font-size:28px;
-            font-weight:bold;
-            margin-bottom:25px;
+        .logo {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 25px;
+            color: #081450;
         }
-
     </style>
-
 </head>
+
 <body>
 
 <div class="login-card">
@@ -48,25 +49,39 @@
         {% csrf_token %}
 
         <div class="mb-3">
-            <label>Usuario</label>
-            <input type="text"
-            name="username"
-            class="form-control"
-            required>
+            <label for="username" class="form-label">Usuario</label>
+            <input
+                type="text"
+                name="username"
+                id="username"
+                class="form-control"
+                autocomplete="username"
+                required
+            >
         </div>
 
         <div class="mb-3">
-            <label>Contraseña</label>
-            <input type="password"
-            name="password"
-            class="form-control"
-            required>
+            <label for="password" class="form-label">Contraseña</label>
+            <input
+                type="password"
+                name="password"
+                id="password"
+                class="form-control"
+                autocomplete="current-password"
+                required
+            >
         </div>
 
-        <button class="btn btn-primary w-100">
+        <button type="submit" class="btn btn-primary w-100">
             Entrar
         </button>
     </form>
+
+    <div class="text-center mt-3">
+        <a href="{% url 'password_reset' %}" class="text-decoration-none">
+            ¿Olvidaste tu contraseña?
+        </a>
+    </div>
 
     {% if error %}
         <div class="alert alert-danger mt-3">

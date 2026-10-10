@@ -423,21 +423,34 @@ def nueva_venta(request):
                 negocio=negocio
             ).first()
 
-        # ----------------------------------------------------
-        # DESCUENTO
-        # ----------------------------------------------------
+# ----------------------------------------------------
+# DESCUENTO Y VALIDACIÓN DE PERMISOS
+# ----------------------------------------------------
 
-        descuento = convertir_decimal(
-            request.POST.get(
-                "descuento",
-                "0"
-            )
+    descuento = convertir_decimal(
+        request.POST.get(
+          "descuento",
+         "0"
+     )
+    )
+
+    es_administrador = request.user.is_superuser or request.user.groups.filter(
+      name="Admin"
+    ).exists()
+
+    permite_descuentos = (
+        es_administrador
+        or tiene_permiso(
+         request.user,
+         "aplicar_descuentos"
         )
+    )
 
-        if descuento < 0:
+    if not permite_descuentos:
+        descuento = Decimal("0")
 
-            descuento = Decimal("0")
-
+    if descuento < 0:
+        descuento = Decimal("0")
         # ----------------------------------------------------
         # TIPO DE PAGO
         # ----------------------------------------------------
@@ -845,14 +858,24 @@ def nueva_venta(request):
     # ========================================================
 
     return render(
-        request,
-        "ventas.html",
-        {
-            "productos": productos,
-            "clientes": clientes,
-            "caja_abierta": caja_abierta,
-        }
-    )
+    request,
+    "ventas.html",
+    {
+        "productos": productos,
+        "clientes": clientes,
+        "caja_abierta": caja_abierta,
+        "permite_descuentos": (
+            request.user.is_superuser
+            or request.user.groups.filter(
+                name="Admin"
+            ).exists()
+            or tiene_permiso(
+                request.user,
+                "aplicar_descuentos"
+            )
+        ),
+    }
+)
 
 
 # ============================================================

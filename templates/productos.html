@@ -102,17 +102,26 @@
 
                     <td>
 
-                        {% if p.imagen %}
+                        
+{% if p.imagen %}
 
-                        <img
-                            src="{{ p.imagen.url }}"
-                            width="70"
-                            height="70"
-                            style="object-fit: cover;"
-                            class="rounded shadow-sm"
-                        >
+<img
+    src="{{ p.imagen.url }}"
+    width="70"
+    height="70"
+    style="object-fit: cover; cursor: zoom-in;"
+    class="rounded shadow-sm"
+    alt="{{ p.nombre }}"
+    role="button"
+    tabindex="0"
+    title="Hacé clic para ampliar la imagen"
+    onclick="ampliarImagenProducto(this)"
+    onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); ampliarImagenProducto(this); }"
+    data-imagen="{{ p.imagen.url }}"
+    data-nombre="{{ p.nombre }}"
+>
 
-                        {% endif %}
+{% endif %}
 
                     </td>
 
@@ -252,8 +261,55 @@
 
 </div>
 
+<!-- VENTANA PARA AMPLIAR LA IMAGEN DEL PRODUCTO -->
+
+<div class="modal fade" id="modalImagenProductoLista" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloImagenProductoLista">
+                    Imagen del producto
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <img
+                    id="imagenProductoListaAmpliada"
+                    src=""
+                    alt=""
+                    style="max-width: 100%; max-height: 75vh; object-fit: contain;"
+                >
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <script>
+    
+function ampliarImagenProducto(elemento) {
+    const url = elemento.dataset.imagen;
+    const nombre = elemento.dataset.nombre || "Imagen del producto";
+
+    const imagen = document.getElementById("imagenProductoListaAmpliada");
+    const titulo = document.getElementById("tituloImagenProductoLista");
+    const modalElemento = document.getElementById("modalImagenProductoLista");
+
+    imagen.src = url;
+    imagen.alt = nombre;
+    titulo.textContent = nombre;
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalElemento);
+    modal.show();
+}
 
 document
 .getElementById("buscarProducto")

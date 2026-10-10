@@ -77,6 +77,25 @@
                                 </td>
                             </tr>
 
+                            <tr>
+                                <td>
+                                    <strong>Aplicar descuentos</strong>
+                                    <div class="text-muted small">
+                                        Permite aplicar descuentos al registrar ventas.
+                                    </div>
+                                </td>
+                            
+                                <td class="text-center">
+                                    <input
+                                        type="checkbox"
+                                        name="aplicar_descuentos"
+                                        class="form-check-input"
+                                        style="transform: scale(1.3);"
+                                        {% if permisos.aplicar_descuentos %}checked{% endif %}
+                                    >
+                                </td>
+                            </tr>
+
 
                             <tr>
                                 <td>

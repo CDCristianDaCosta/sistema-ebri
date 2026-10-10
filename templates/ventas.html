@@ -127,21 +127,26 @@
 
                             <!-- IMAGEN -->
 
-                            <td>
-
-                                {% if p.imagen %}
-
-                                <img
-                                    src="{{ p.imagen.url }}"
-                                    width="60"
-                                    height="60"
-                                    style="object-fit: cover;"
-                                    class="rounded shadow-sm"
-                                >
-
-                                {% endif %}
-
-                            </td>
+                            
+<td>
+    {% if p.imagen %}
+    <img
+        src="{{ p.imagen.url }}"
+        width="60"
+        height="60"
+        style="object-fit: cover; cursor: zoom-in;"
+        class="rounded shadow-sm"
+        alt="{{ p.nombre }}"
+        role="button"
+        tabindex="0"
+        title="Hacé clic para ampliar la imagen"
+        onclick="ampliarImagen(this)"
+        onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); ampliarImagen(this); }"
+        data-imagen="{{ p.imagen.url }}"
+        data-nombre="{{ p.nombre }}"
+    >
+    {% endif %}
+</td>
 
 
                             <!-- PRODUCTO -->
@@ -338,14 +343,22 @@
                 </label>
 
                 <input
-                    type="text"
-                    name="descuento"
-                    id="descuento"
-                    class="form-control form-control-lg"
-                    value="0"
-                    inputmode="numeric"
-                    placeholder="Ej: 20.000"
-                >
+    type="text"
+    name="descuento"
+    id="descuento"
+    class="form-control form-control-lg"
+    value="0"
+    inputmode="numeric"
+    placeholder="Ej: 20.000"
+    {% if not permite_descuentos %}disabled{% endif %}
+>
+
+{% if not permite_descuentos %}
+    <small class="text-muted">
+        <i class="fas fa-lock"></i>
+        No tenés permiso para aplicar descuentos. Consultá con Natalia.
+    </small>
+{% endif %}
 
             </div>
 
@@ -401,6 +414,33 @@
         </div>
 
     </form>
+    
+<div class="modal fade" id="modalImagenProducto" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tituloImagenProducto">
+                    Imagen del producto
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                ></button>
+            </div>
+
+            <div class="modal-body text-center">
+                <img
+                    id="imagenProductoAmpliada"
+                    src=""
+                    alt=""
+                    style="max-width: 100%; max-height: 75vh; object-fit: contain;"
+                >
+            </div>
+        </div>
+    </div>
+</div>
 
 </div>
 
@@ -408,6 +448,21 @@
 <script>
 
 
+    function ampliarImagen(elemento) {
+        const url = elemento.dataset.imagen;
+        const nombre = elemento.dataset.nombre || "Imagen del producto";
+    
+        const imagen = document.getElementById("imagenProductoAmpliada");
+        const titulo = document.getElementById("tituloImagenProducto");
+        const modalElemento = document.getElementById("modalImagenProducto");
+    
+        imagen.src = url;
+        imagen.alt = nombre;
+        titulo.textContent = nombre;
+    
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElemento);
+        modal.show();
+    }
 function formato(numero) {
 
     numero =

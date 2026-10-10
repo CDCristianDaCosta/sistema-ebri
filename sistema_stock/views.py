@@ -454,6 +454,10 @@ def permisos_usuario(
             "realizar_ventas"
             in request.POST
         )
+        permisos.aplicar_descuentos = (
+    "aplicar_descuentos"
+    in request.POST
+)
 
         permisos.ver_productos = (
             "ver_productos"
