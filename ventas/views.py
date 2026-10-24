@@ -304,7 +304,6 @@ def generar_pdf(request, venta_id):
 
     return response
 
-
 # ============================================================
 # NUEVA VENTA
 # ============================================================
@@ -312,222 +311,121 @@ def generar_pdf(request, venta_id):
 @login_required
 def nueva_venta(request):
 
-    negocio = obtener_negocio(
-        request.user
-    )
+    negocio = obtener_negocio(request.user)
 
     if not negocio:
+        messages.error(request, "No tenés un negocio asignado.")
+        return redirect("dashboard")
 
-        messages.error(
-            request,
-            "No tenés un negocio asignado."
-        )
+    if not tiene_permiso(request.user, "realizar_ventas"):
+        messages.error(request, "No tenés permiso para realizar ventas.")
+        return redirect("dashboard")
 
-        return redirect(
-            "dashboard"
-        )
-
-    if not tiene_permiso(
-        request.user,
-        "realizar_ventas"
-    ):
-
-        messages.error(
-            request,
-            "No tenés permiso para realizar ventas."
-        )
-
-        return redirect(
-            "dashboard"
-        )
-
-    # ========================================================
     # VERIFICAR CAJA ABIERTA
-    # ========================================================
-
-    caja_abierta = (
-        Caja.objects
-        .filter(
-            negocio=negocio,
-            estado="abierta"
-        )
-        .first()
-    )
+    caja_abierta = Caja.objects.filter(
+        negocio=negocio,
+        estado="abierta"
+    ).first()
 
     if not caja_abierta:
-
         messages.warning(
             request,
             "Primero debés abrir la caja para realizar ventas."
         )
+        return redirect("/ventas/caja/abrir/")
 
-        return redirect(
-            "/ventas/caja/abrir/"
-        )
-
-    clientes = Cliente.objects.filter(
-        negocio=negocio
-    )
+    clientes = Cliente.objects.filter(negocio=negocio)
 
     productos = (
         Producto.objects
-        .filter(
-            negocio=negocio,
-            activo=True
-        )
-        .prefetch_related(
-            "variantes"
-        )
+        .filter(negocio=negocio, activo=True)
+        .prefetch_related("variantes")
     )
 
     # ========================================================
-    # POST - REALIZAR VENTA
+    # PROCESAR VENTA
     # ========================================================
 
     if request.method == "POST":
 
-        caja_abierta = (
-            Caja.objects
-            .filter(
-                negocio=negocio,
-                estado="abierta"
-            )
-            .first()
-        )
+        caja_abierta = Caja.objects.filter(
+            negocio=negocio,
+            estado="abierta"
+        ).first()
 
         if not caja_abierta:
-
             messages.error(
                 request,
                 "La caja está cerrada. Primero debés abrir una caja."
             )
+            return redirect("/ventas/caja/abrir/")
 
-            return redirect(
-                "/ventas/caja/abrir/"
-            )
-
-        # ----------------------------------------------------
         # CLIENTE
-        # ----------------------------------------------------
-
-        cliente_id = request.POST.get(
-            "cliente"
-        )
-
+        cliente_id = request.POST.get("cliente")
         cliente = None
 
         if cliente_id:
-
             cliente = Cliente.objects.filter(
                 id=cliente_id,
                 negocio=negocio
             ).first()
 
-# ----------------------------------------------------
-# DESCUENTO Y VALIDACIÓN DE PERMISOS
-# ----------------------------------------------------
-
-    descuento = convertir_decimal(
-        request.POST.get(
-          "descuento",
-         "0"
-     )
-    )
-
-    es_administrador = request.user.is_superuser or request.user.groups.filter(
-      name="Admin"
-    ).exists()
-
-    permite_descuentos = (
-        es_administrador
-        or tiene_permiso(
-         request.user,
-         "aplicar_descuentos"
+        # DESCUENTO Y PERMISOS
+        descuento = convertir_decimal(
+            request.POST.get("descuento", "0")
         )
-    )
 
-    if not permite_descuentos:
-        descuento = Decimal("0")
+        es_administrador = (
+            request.user.is_superuser
+            or request.user.groups.filter(name="Admin").exists()
+        )
 
-    if descuento < 0:
-        descuento = Decimal("0")
-        # ----------------------------------------------------
+        permite_descuentos = (
+            es_administrador
+            or tiene_permiso(request.user, "aplicar_descuentos")
+        )
+
+        if not permite_descuentos:
+            descuento = Decimal("0")
+
+        if descuento < 0:
+            descuento = Decimal("0")
+
         # TIPO DE PAGO
-        # ----------------------------------------------------
+        tipo_pago = request.POST.get("tipo_pago", "efectivo")
 
-        tipo_pago = request.POST.get(
-            "tipo_pago",
-            "efectivo"
-        )
-
-        if tipo_pago not in [
-            "efectivo",
-            "transferencia"
-        ]:
-
+        if tipo_pago not in ["efectivo", "transferencia"]:
             tipo_pago = "efectivo"
 
-        # ----------------------------------------------------
-        # PAGO
-        # ----------------------------------------------------
-
-        pago = convertir_decimal(
-            request.POST.get(
-                "pago",
-                "0"
-            )
-        )
+        # PAGO RECIBIDO
+        pago = convertir_decimal(request.POST.get("pago", "0"))
 
         if pago < 0:
-
             pago = Decimal("0")
 
-        # ----------------------------------------------------
         # RECORRER PRODUCTOS DEL CARRITO
-        # ----------------------------------------------------
-
         items = []
-
         total = Decimal("0")
-
         ganancia_total = Decimal("0")
-
         error_stock = False
 
         for key, value in request.POST.items():
 
-            if not key.startswith(
-                "cantidad_"
-            ):
-
+            if not key.startswith("cantidad_"):
                 continue
 
             try:
-
-                variante_id = int(
-                    key.split("_")[1]
-                )
-
-                cantidad = int(
-                    value or 0
-                )
-
-            except (
-                ValueError,
-                IndexError
-            ):
-
+                variante_id = int(key.split("_")[1])
+                cantidad = int(value or 0)
+            except (ValueError, IndexError):
                 continue
 
             if cantidad <= 0:
-
                 continue
 
             variante = (
                 VarianteProducto.objects
-                .select_related(
-                    "producto"
-                )
+                .select_related("producto")
                 .filter(
                     id=variante_id,
                     producto__negocio=negocio,
@@ -537,40 +435,21 @@ def nueva_venta(request):
             )
 
             if not variante:
-
                 continue
 
             if cantidad > variante.stock:
-
                 error_stock = True
-
                 break
 
             producto = variante.producto
+            precio = producto.precio
+            costo = producto.costo
 
-            precio = (
-                producto.precio
-            )
-
-            costo = (
-                producto.costo
-            )
-
-            subtotal = (
-                precio *
-                cantidad
-            )
-
-            ganancia_producto = (
-                precio -
-                costo
-            ) * cantidad
+            subtotal = precio * cantidad
+            ganancia_producto = (precio - costo) * cantidad
 
             total += subtotal
-
-            ganancia_total += (
-                ganancia_producto
-            )
+            ganancia_total += ganancia_producto
 
             items.append({
                 "variante": variante,
@@ -579,106 +458,54 @@ def nueva_venta(request):
                 "precio": precio,
             })
 
-        # ----------------------------------------------------
         # VALIDAR STOCK
-        # ----------------------------------------------------
-
         if error_stock:
-
             messages.error(
                 request,
                 "Una de las cantidades supera el stock disponible."
             )
+            return redirect("ventas")
 
-            return redirect(
-                "ventas"
-            )
-
-        # ----------------------------------------------------
         # VALIDAR CARRITO
-        # ----------------------------------------------------
-
         if not items or total <= 0:
+            messages.error(request, "No hay productos en la venta.")
+            return redirect("ventas")
 
-            messages.error(
-                request,
-                "No hay productos en la venta."
-            )
-
-            return redirect(
-                "ventas"
-            )
-
-        # ----------------------------------------------------
         # TOTAL FINAL
-        # ----------------------------------------------------
-
-        total_final = (
-            total -
-            descuento
-        )
+        total_final = total - descuento
 
         if total_final < 0:
-
             total_final = Decimal("0")
 
         if total_final <= 0:
-
             messages.error(
                 request,
                 "El total de la venta debe ser mayor a 0."
             )
+            return redirect("ventas")
 
-            return redirect(
-                "ventas"
-            )
-
-        # ----------------------------------------------------
         # VALIDAR PAGO
-        # ----------------------------------------------------
-
         if pago < total_final:
-
             messages.error(
                 request,
                 "El pago recibido es menor al total."
             )
+            return redirect("ventas")
 
-            return redirect(
-                "ventas"
-            )
-
-        # ----------------------------------------------------
         # GANANCIA FINAL
-        # ----------------------------------------------------
-
         ganancia_total -= descuento
 
         if ganancia_total < 0:
-
             ganancia_total = Decimal("0")
 
-        # ----------------------------------------------------
         # VUELTO
-        # ----------------------------------------------------
+        vuelto = pago - total_final
 
-        vuelto = (
-            pago -
-            total_final
-        )
-
-        # ----------------------------------------------------
         # NÚMERO DE FACTURA
-        # ----------------------------------------------------
-
         ultima = (
             Venta.objects
-            .filter(
-                negocio=negocio
-            )
-            .exclude(
-                numero_factura=""
-            )
+            .filter(negocio=negocio)
+            .exclude(numero_factura="")
             .order_by("-id")
             .first()
         )
@@ -686,21 +513,11 @@ def nueva_venta(request):
         numero = 1
 
         if ultima:
-
             try:
-
-                numero = (
-                    int(
-                        ultima.numero_factura
-                        .split("-")[-1]
-                    ) + 1
-                )
-
-            except (
-                ValueError,
-                IndexError
-            ):
-
+                numero = int(
+                    ultima.numero_factura.split("-")[-1]
+                ) + 1
+            except (ValueError, IndexError):
                 numero = 1
 
         numero_factura = (
@@ -709,86 +526,41 @@ def nueva_venta(request):
             f"{str(numero).zfill(7)}"
         )
 
-        # ----------------------------------------------------
         # CREAR VENTA
-        # ----------------------------------------------------
-
         venta = Venta.objects.create(
-
             negocio=negocio,
-
             caja=caja_abierta,
-
             cliente=cliente,
-
             numero_factura=numero_factura,
-
-            timbrado=(
-                negocio.timbrado or ""
-            ),
-
+            timbrado=negocio.timbrado or "",
             total=total_final,
-
             descuento=descuento,
-
-            ganancia=int(
-                ganancia_total
-            ),
-
+            ganancia=int(ganancia_total),
             tipo_pago=tipo_pago,
-
-            pago=float(
-                pago
-            ),
-
-            vuelto=float(
-                vuelto
-            )
+            pago=float(pago),
+            vuelto=float(vuelto)
         )
 
-        # ----------------------------------------------------
         # CREAR DETALLES Y DESCONTAR STOCK
-        # ----------------------------------------------------
-
         for item in items:
 
-            variante = item[
-                "variante"
-            ]
-
-            producto = item[
-                "producto"
-            ]
-
-            cantidad = item[
-                "cantidad"
-            ]
-
-            precio = item[
-                "precio"
-            ]
+            variante = item["variante"]
+            producto = item["producto"]
+            cantidad = item["cantidad"]
+            precio = item["precio"]
 
             DetalleVenta.objects.create(
-
                 venta=venta,
-
                 producto=producto,
-
                 variante=variante,
-
                 cantidad=cantidad,
-
                 precio=precio
             )
 
             variante.stock -= cantidad
-
             variante.save()
 
-        # ----------------------------------------------------
         # AUDITORÍA DE LA VENTA
-        # ----------------------------------------------------
-
         productos_auditoria = []
 
         for item in items:
@@ -798,10 +570,7 @@ def nueva_venta(request):
             cantidad = item["cantidad"]
             precio = item["precio"]
 
-            subtotal = (
-                precio *
-                cantidad
-            )
+            subtotal = precio * cantidad
 
             nombre_variante = (
                 variante.nombre
@@ -825,9 +594,7 @@ def nueva_venta(request):
             f"Vuelto: Gs. {vuelto:,.0f} | "
             f"Forma de pago: {tipo_pago} | "
             f"Productos: "
-            + " || ".join(
-                productos_auditoria
-            )
+            + " || ".join(productos_auditoria)
         )
 
         registrar_auditoria(
@@ -839,44 +606,35 @@ def nueva_venta(request):
             descripcion=descripcion_venta
         )
 
-        # ----------------------------------------------------
         # VENTA CORRECTA
-        # ----------------------------------------------------
-
         messages.success(
             request,
             "Venta realizada correctamente."
         )
 
-        return redirect(
-            "ticket",
-            venta_id=venta.id
-        )
+        return redirect("ticket", venta_id=venta.id)
 
     # ========================================================
     # MOSTRAR PANTALLA DE VENTA
     # ========================================================
 
     return render(
-    request,
-    "ventas.html",
-    {
-        "productos": productos,
-        "clientes": clientes,
-        "caja_abierta": caja_abierta,
-        "permite_descuentos": (
-            request.user.is_superuser
-            or request.user.groups.filter(
-                name="Admin"
-            ).exists()
-            or tiene_permiso(
-                request.user,
-                "aplicar_descuentos"
-            )
-        ),
-    }
-)
-
+        request,
+        "ventas.html",
+        {
+            "productos": productos,
+            "clientes": clientes,
+            "caja_abierta": caja_abierta,
+            "permite_descuentos": (
+                request.user.is_superuser
+                or request.user.groups.filter(name="Admin").exists()
+                or tiene_permiso(
+                    request.user,
+                    "aplicar_descuentos"
+                )
+            ),
+        }
+    )
 
 # ============================================================
 # REPORTE DE VENTAS
